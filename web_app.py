@@ -246,7 +246,6 @@ st.title('COVID-19 in US Prisons')
 
 
 # Show grid map with Plotly
-st.markdown('<h3>Grid Map</h3>', unsafe_allow_html = True)
 st.plotly_chart(make_grid())
 
 
@@ -281,22 +280,22 @@ bar_chart.update_yaxes(autorange = 'reversed')
 st.write(bar_chart)
 
 
-# Show side-by-side comparison of case-fatality ratios with Streamlit
-st.markdown('<h3>Side-by-Side Comparison</h3>', unsafe_allow_html = True)
-st.write(combined_data)
-st.markdown('Here, "Prison_CFR" refers to case-fatality ratios in US state prisons, calculated using total prisoner cases and total prisoner deaths from The Marshall Project\'s dataset (see below). "Mortality_Rate" refers to case-fatality ratios in US states, provided by JHU CSSE\'s dataset.')
-
-
-# Show raw data with Streamlit
-st.markdown('<h3>Raw Data</h3>', unsafe_allow_html = True)
+# Show data with Streamlit
+st.markdown('<h3>Data</h3>', unsafe_allow_html = True)
 as_of_date = datetime.strptime(COVID_DATA_URL[115:-4], '%m-%d-%Y').strftime('%B %d, %Y')
 st.write('As of ' + as_of_date + '.')
+
 st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
 st.write(covid_prison_data)
 st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
+
 st.markdown('<h4>COVID-19 in US States</h4>', unsafe_allow_html = True)
 st.write(covid_data)
 st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Here, "Mortality_Rate" refers to case-fatality ratio.')
+
+st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
+st.write(combined_data)
+st.markdown('Here, "Prison_CFR" refers to case-fatality ratios in US state prisons, calculated using total prisoner cases and total prisoner deaths from The Marshall Project\'s dataset (see below). "Mortality_Rate" refers to case-fatality ratios in US states, provided by JHU CSSE\'s dataset.')
 
 
 # Explain epidemiological terms, potential problems
