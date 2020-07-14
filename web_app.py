@@ -13,6 +13,10 @@ from datetime import datetime
 # add statistics for overall / nationwide, graphs for mortality rate, incidence rate, do bar graphs inside grid map all need to have same
 # scale? Or does the bar chart serve as "normalized" visualization? But if normalize grid map, can remove all axis marker things?
 
+# Add as issue on Github: some bars in subplot don't touch zeroline, for whatever reason (also, the size affects which bars are glitchy)
+# Workaround: offsetted zeroline by a tiny amount (max value * 0.01) -- not sure if this is bad practice? Since map is intended to show
+# relationship rather than value, and because of subplots' scale, doesn't make a discernable difference
+
 
 COVID_PRISON_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/covid_prison_cases.csv')
 covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
@@ -45,6 +49,7 @@ def make_grid():
     grid = make_subplots(
         rows = 9,
         cols = 12,
+        
         subplot_titles = (""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  ,
                           ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , ""  , "ME",
                           "WA", "MT", "ND", "MN", "WI", "MI", ""  , ""  , "NY", "VT", "NH", "MA",
@@ -67,162 +72,169 @@ def make_grid():
         ],
     )
 
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Maine']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 1, col = 12)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Maine']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 1, col = 12)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Washington']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 1)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Washington']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 1)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Montana']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 2)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Montana']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 2)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'North Dakota']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 3)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'North Dakota']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 3)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Minnesota']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 4)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Minnesota']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 4)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Wisconsin']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 5)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Wisconsin']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 5)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Michigan']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 6)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Michigan']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 6)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New York']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 9)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New York']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 9)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Vermont']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 10)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Vermont']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 10)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New Hampshire']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 11)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New Hampshire']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 11)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Massachusetts']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 12)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Massachusetts']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 2, col = 12)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Oregon']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 1)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Oregon']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 1)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Idaho']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 2)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Idaho']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 2)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Wyoming']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 3)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Wyoming']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 3)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'South Dakota']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 4)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'South Dakota']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 4)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Iowa']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 5)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Iowa']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 5)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Illinois']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 6)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Illinois']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 6)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Indiana']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 7)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Indiana']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 7)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Ohio']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 8)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Ohio']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 8)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Pennsylvania']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 9)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Pennsylvania']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 9)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New Jersey']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 10)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New Jersey']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 10)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Connecticut']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 11)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Connecticut']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 11)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Rhode Island']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 12)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Rhode Island']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 3, col = 12)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Nevada']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 1)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Nevada']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 1)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Utah']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 2)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Utah']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 2)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Colorado']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 3)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Colorado']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 3)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Nebraska']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 4)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Nebraska']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 4)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Kansas']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 5)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Kansas']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 5)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Missouri']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 6)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Missouri']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 6)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Tennessee']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 7)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Tennessee']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 7)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Kentucky']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 8)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Kentucky']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 8)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'West Virginia']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 9)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'West Virginia']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 9)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Virginia']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 10)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Virginia']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 10)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Maryland']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 11)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Maryland']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 11)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Delaware']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 12)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Delaware']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 4, col = 12)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'California']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 2)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'California']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 2)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Arizona']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 3)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Arizona']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 3)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New Mexico']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 4)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New Mexico']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 4)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Oklahoma']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 5)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Oklahoma']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 5)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Arkansas']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 6)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Arkansas']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 6)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Mississippi']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 7)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Mississippi']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 7)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Alabama']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 8)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Alabama']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 8)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Georgia']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 9)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Georgia']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 9)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'South Carolina']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 10)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'South Carolina']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 10)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'North Carolina']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 11)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'North Carolina']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 5, col = 11)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Texas']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 6, col = 5)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Texas']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 6, col = 5)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Louisiana']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 6, col = 6)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Louisiana']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 6, col = 6)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Florida']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 6, col = 9)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Florida']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 6, col = 9)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Alaska']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 8, col = 2)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Alaska']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 8, col = 2)
+    
+    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 8, col = 4)
+    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Mortality_Rate'], width = 0.3, marker_color = '#000000'), row = 8, col = 4)
+
     grid.update_layout(
-        width = 1000,
-        height = 944,
+        #width = 1000,
+        #height = 944,
+        width = 950,
+        height = 897,
+        showlegend = False,
         plot_bgcolor = '#ffffff',
         font = dict(family = 'IBM Plex Sans', size = 12, color = '#000000'),
     )
 
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Maine']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 1, col = 12)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Maine']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 1, col = 12)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Washington']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 1)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Washington']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 1)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Montana']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 2)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Montana']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 2)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'North Dakota']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 3)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'North Dakota']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 3)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Minnesota']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 4)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Minnesota']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 4)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Wisconsin']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 5)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Wisconsin']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 5)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Michigan']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 6)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Michigan']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 6)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New York']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 9)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New York']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 9)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Vermont']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 10)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Vermont']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 10)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New Hampshire']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 11)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New Hampshire']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 11)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Massachusetts']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 2, col = 12)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Massachusetts']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 2, col = 12)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Oregon']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 1)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Oregon']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 1)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Idaho']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 2)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Idaho']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 2)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Wyoming']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 3)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Wyoming']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 3)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'South Dakota']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 4)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'South Dakota']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 4)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Iowa']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 5)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Iowa']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 5)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Illinois']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 6)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Illinois']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 6)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Indiana']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 7)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Indiana']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 7)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Ohio']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 8)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Ohio']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 8)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Pennsylvania']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 9)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Pennsylvania']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 9)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New Jersey']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 10)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New Jersey']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 10)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Connecticut']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 11)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Connecticut']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 11)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Rhode Island']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 3, col = 12)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Rhode Island']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 3, col = 12)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Nevada']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 1)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Nevada']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 1)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Utah']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 2)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Utah']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 2)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Colorado']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 3)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Colorado']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 3)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Nebraska']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 4)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Nebraska']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 4)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Kansas']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 5)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Kansas']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 5)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Missouri']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 6)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Missouri']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 6)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Tennessee']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 7)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Tennessee']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 7)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Kentucky']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 8)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Kentucky']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 8)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'West Virginia']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 9)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'West Virginia']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 9)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Virginia']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 10)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Virginia']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 10)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Maryland']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 11)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Maryland']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 11)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Delaware']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 4, col = 12)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Delaware']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 4, col = 12)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'California']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 2)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'California']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 2)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Arizona']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 3)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Arizona']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 3)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'New Mexico']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 4)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'New Mexico']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 4)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Oklahoma']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 5)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Oklahoma']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 5)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Arkansas']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 6)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Arkansas']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 6)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Mississippi']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 7)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Mississippi']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 7)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Alabama']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 8)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Alabama']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 8)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Georgia']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 9)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Georgia']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 9)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'South Carolina']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 10)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'South Carolina']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 10)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'North Carolina']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 5, col = 11)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'North Carolina']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 5, col = 11)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Texas']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 6, col = 5)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Texas']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 6, col = 5)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Louisiana']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 6, col = 6)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Louisiana']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 6, col = 6)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Florida']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 6, col = 9)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Florida']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 6, col = 9)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Alaska']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 8, col = 2)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Alaska']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 8, col = 2)
-    
-    grid.add_trace(go.Bar(x = [" "], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Prison_CFR'], width = 0.3, marker_color = '#f13b3b'), row = 8, col = 4)
-    grid.add_trace(go.Bar(x = ["  "], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Mortality_Rate'], width= 0.3, marker_color = '#000000'), row = 8, col = 4)
+    grid.update_xaxes(linecolor = '#000000')
+    #grid.update_yaxes(range = [0, max(combined_data["Prison_CFR"].max(), combined_data["Mortality_Rate"].max()) + 0.05 * max(combined_data["Prison_CFR"].max(), combined_data["Mortality_Rate"].max())], visible = False)
+    grid.update_yaxes(range = [0.01 * max(combined_data["Prison_CFR"].max(), combined_data["Mortality_Rate"].max()), max(combined_data["Prison_CFR"].max(), combined_data["Mortality_Rate"].max()) + 0.05 * max(combined_data["Prison_CFR"].max(), combined_data["Mortality_Rate"].max())], visible = False)
     
     return grid
 
