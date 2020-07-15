@@ -232,6 +232,11 @@ def make_grid():
         #showlegend = False,
         #legend_itemclick = False,
         #legend_itemdoubleclick = False,
+        legend = dict (
+            font = dict (
+                size = 14,
+            ),
+        ),
         plot_bgcolor = '#ffffff',
         font = dict(family = 'IBM Plex Sans', size = 12, color = '#000000'),
     )
