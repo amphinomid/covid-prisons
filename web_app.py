@@ -7,16 +7,13 @@ from datetime import datetime
 # How to handle data from federal prisons and D.C.? Federal prisons: not exactly state-based, but it would be misleading
 # to use "nationwide" COVID data? D.C.: Marshall data doesn't include, but JHU data does.
 
-# Other stuff: shift grid map to the left, bold state abbreviations, add column of zeroes to combined data to create gap between two bars
-# add titles to grid map and bar chart, add sidebar for navigation, bar chart --> sortable?, implement slider (see how these variables
-# changed with respect to each other over the course of the outbreak), keep scale same across time (for slider), prob need st.cache,
-# add statistics for overall / nationwide, graphs for mortality rate, incidence rate, do bar graphs inside grid map all need to have same
-# scale? Or does the bar chart serve as "normalized" visualization? But if normalize grid map, can remove all axis marker things?
+# Add sidebar for navigation, slider (see how these variables changed with respect to each other over the course of the
+# outbreak), keep scale same across time (for slider), prob need st.cache,
+# Add statistics for nationwide, graphs for mortality rate, incidence rate
 
-# Add as issue on Github: some bars in subplot don't touch zeroline, for whatever reason (also, the size affects which bars are glitchy)
-# Workaround: offsetted zeroline by a tiny amount (max value * 0.01) -- not sure if this is bad practice? Since map is intended to show
-# relationship rather than value, and because of subplots' scale, doesn't make a discernable difference
-# Another issue: hovering over trace shouldn't change cursor
+# Since some bars not touching zeroline for some reason, offsetted zeroline by a tiny amount (max value * 0.01) -- not sure
+# if this is bad practice? Since map is intended to show relationship rather than value,
+# and because of subplots' scale, doesn't make a discernable difference
 
 
 COVID_PRISON_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/covid_prison_cases.csv')
