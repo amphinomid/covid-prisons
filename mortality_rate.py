@@ -52,7 +52,7 @@ covid_data = covid_data.append(nationwide_covid_data, ignore_index = True)
 
 
 combined_data = pd.concat([covid_prison_data, covid_data], axis = 1)
-combined_data = combined_data.drop(columns = ["total_prisoner_deaths", "Province_State", "Confirmed", "Deaths", "Incident_Rate"])
+combined_data = combined_data.drop(columns = ["total_prisoner_deaths", "Province_State", "Confirmed", "Deaths", "Incident_Rate", "population"])
 
 
 # Based off grid from http://awesome-streamlit.org --> Gallery --> "Layout and Style Experiments"
@@ -272,7 +272,7 @@ st.plotly_chart(make_grid())
 
 
 # Show bar chart with Plotly
-st.markdown('<h3>Another Look</h3>', unsafe_allow_html = True)
+st.markdown('<h3>Another Visualization</h3>', unsafe_allow_html = True)
 bar_chart = go.Figure()
 bar_chart.add_trace(go.Bar(
     x = combined_data['Prison_MR'],
