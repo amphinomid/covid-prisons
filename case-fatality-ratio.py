@@ -305,6 +305,6 @@ st.write(combined_data)
 st.markdown('<h3>Epidemiological terms, caveats, discussion</h3>', unsafe_allow_html = True)
 st.markdown('Case-fatality ratio is an epidemiological measure of mortality. A formula for case-fatality ratio is as follows: <i>number of recorded deaths * 100 / number of confirmed cases</i>.', unsafe_allow_html = True)
 st.write('Some caveats include: (1) underreporting, whether deaths or cases, (2) at any given moment, the instantaneous numbers may not reflect the ultimate numbers (e.g. uncertainty regarding ultimate number of deaths).')
-st.write('Also note: federal prisons were excluded from these analyses, since the Marshall data placed them in a separate category (rather than grouping them with their state\'s data). D.C. was also excluded, 
+st.write('Also note: federal prisons were excluded from these analyses, since the Marshall data placed them in a separate category (rather than grouping them with their state\'s data). Furthermore, the Marshall data did not include D.C. data, so D.C. was omitted from these analyses.') 
 st.markdown('<b>The US has a mass incarceration problem.</b> Of all the prisoners in the world, 20% are held in the US ([Source](https://www.prisonpolicy.org/blog/2020/01/16/percent-incarcerated/)). And over the course of the COVID-19 pandemic, many prisons have failed to take adequate measures to protect prisoners from the disease.', unsafe_allow_html = True)
 
