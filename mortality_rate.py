@@ -19,6 +19,8 @@ prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
                     usecols = ["name", "april_pop", "as_of_date"],
                     skiprows = 1,
                     )
+nationwide_prison_pop_data = {"name": "NATIONWIDE", "april_pop": prison_pop_data.sum(0).loc["april_pop"], "as_of_date": "N/A"}
+prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
 
 COVID_PRISON_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/covid_prison_cases.csv')
 covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
@@ -29,6 +31,9 @@ covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
                     skiprows = 1, # Change according to date
                     )
 covid_prison_data["Prison_MR"] = covid_prison_data["total_prisoner_deaths"] * 100000 / prison_pop_data["april_pop"]
+nationwide_covid_prison_data = {"name": "NATIONWIDE", "total_prisoner_deaths": covid_prison_data.sum(0).loc["total_prisoner_deaths"], "Prison_MR": ""}
+nationwide_covid_prison_data["Prison_MR"] = nationwide_covid_prison_data["total_prisoner_deaths"] * 100000 / prison_pop_data.sum(0).loc["april_pop"]
+covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
 
 
 COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-07-2020.csv') # Change according to date
@@ -38,7 +43,12 @@ covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
                     usecols = ["Province_State", "Confirmed", "Deaths", "Incident_Rate"],
                     skiprows = [0, 3, 10, 11, 14, 15, 40, 45, 53],
                     )
-covid_data["State_MR"] = covid_data["Deaths"] * covid_data["Incident_Rate"] / covid_data["Confirmed"]
+covid_data["population"] = (covid_data["Confirmed"] * 100000 / covid_data["Incident_Rate"]).astype(int)
+covid_data["State_MR"] = covid_data["Deaths"] * 100000 / covid_data["population"]
+nationwide_covid_data = {"Province_State": "NATIONWIDE", "Confirmed": covid_data.sum(0).loc["Confirmed"], "Deaths": covid_data.sum(0).loc["Deaths"], "Incident_Rate": "", "population": covid_data.sum(0).loc["population"], "State_MR": ""}
+nationwide_covid_data["Incident_Rate"] = nationwide_covid_data["Confirmed"] * 100000 / nationwide_covid_data["population"]
+nationwide_covid_data["State_MR"] = nationwide_covid_data["Deaths"] * 100000 / nationwide_covid_data["population"]
+covid_data = covid_data.append(nationwide_covid_data, ignore_index = True)
 
 
 combined_data = pd.concat([covid_prison_data, covid_data], axis = 1)
@@ -222,12 +232,15 @@ def make_grid():
     
     grid.add_trace(go.Bar(x = ["In prisons"], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Prison_MR'], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 8, col = 4)
     grid.add_trace(go.Bar(x = ["Statewide"], y = combined_data.loc[combined_data['name'] == 'Hawaii']['State_MR'], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 4)
+    
+    grid.add_trace(go.Bar(x = ["In prisons"], y = combined_data.loc[combined_data['name'] == 'NATIONWIDE']['Prison_MR'], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 8, col = 11)
+    grid.add_trace(go.Bar(x = ["Statewide"], y = combined_data.loc[combined_data['name'] == 'NATIONWIDE']['State_MR'], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 11)
 
     grid.update_layout(
+        #width = 1100,
+        #height = 1038,
         width = 1000,
         height = 944,
-        #width = 950,
-        #height = 897,
         #showlegend = False,
         #legend_itemclick = False,
         #legend_itemdoubleclick = False,
@@ -259,7 +272,7 @@ st.plotly_chart(make_grid())
 
 
 # Show bar chart with Plotly
-st.markdown('<h3>Another Visualization</h3>', unsafe_allow_html = True)
+st.markdown('<h3>Another Look</h3>', unsafe_allow_html = True)
 bar_chart = go.Figure()
 bar_chart.add_trace(go.Bar(
     x = combined_data['Prison_MR'],
@@ -304,7 +317,7 @@ st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) fro
 
 st.markdown('<h4>COVID-19 in US States</h4>', unsafe_allow_html = True)
 st.write(covid_data)
-st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Here, "Confirmed" refers to confirmed COVID-19 cases in US states, "Deaths" refers to recorded deaths due to COVID-19, "Incident_Rate" refers to confirmed cases per 100000 persons, and "State_MR" refers to mortality rates, calculated using deaths and populations (found by algebraically manipulating "Incident_Rate").')
+st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Here, "Confirmed" refers to confirmed COVID-19 cases in US states, "Deaths" refers to recorded deaths due to COVID-19, "Incident_Rate" refers to confirmed cases per 100000 persons, and "State_MR" refers to estimated mortality rates, calculated using deaths and populations (found by algebraically manipulating "Incident_Rate").')
 
 st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
 st.write(combined_data)
