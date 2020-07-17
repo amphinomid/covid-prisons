@@ -4,6 +4,8 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 
+# Add data & visualizaions for prevalence, then combine all 3 metrics into one page & animate
+
 # Add sidebar for navigation, slider (see how these variables changed with respect to each other over the course
 # of the outbreak), keep scale same across time (for slider), prob need st.cache
 
