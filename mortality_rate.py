@@ -4,13 +4,8 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 
-# Add sidebar for navigation, slider (see how these variables changed with respect to each other over the course of the
-# outbreak), keep scale same across time (for slider), prob need st.cache,
-# Add statistics for nationwide, graphs for mortality rate, incidence rate
-
-# Since some bars not touching zeroline for some reason, offsetted zeroline by a tiny amount (max value * 0.01) -- not sure
-# if this is bad practice? Since map is intended to show relationship rather than value,
-# and because of subplots' scale, doesn't make a discernable difference
+# Add sidebar for navigation, slider (see how these variables changed with respect to each other over the course
+# of the outbreak), keep scale same across time (for slider), prob need st.cache
 
 
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
@@ -260,7 +255,7 @@ def make_grid():
     return grid
 
 
-st.title('COVID-19 in US Prisons')
+st.title('COVID-19 in US Prisons, as Told by Data')
 # CSS trick: https://discuss.streamlit.io/t/are-you-using-html-in-markdown-tell-us-why/96/24, https://discuss.streamlit.io/t/creating-a-nicely-formatted-search-field/1804/2
 #with open("style.css") as f:
 #    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html = True)
@@ -326,8 +321,8 @@ st.write(combined_data)
 # Explanation of epidemiological terms, potential problems, and other discussion
 st.markdown('<h3>Epidemiological terms, caveats, discussion</h3>', unsafe_allow_html = True)
 st.markdown('Mortality rate is an epidemiological measure of the frequency of death in a population due to a disease. A formula for mortality rate is as follows: <i>number of recorded deaths * 100000 / population</i>.', unsafe_allow_html = True)
-st.write('Some caveats include: (1) underreporting, whether deaths or cases, (2) at any given moment, the instantaneous numbers may not reflect the ultimate numbers (e.g. uncertainty regarding ultimate number of deaths).')
-st.write('Also note: federal prisons were excluded from these analyses, since the Marshall data placed them in a separate category (rather than grouping them with their state\'s data). Furthermore, the Marshall data did not include D.C. data, so D.C. was also omitted from these analyses.')
+st.write('Some caveats include: (1) underreporting, (2) at any given moment, the instantaneous numbers may not reflect the ultimate numbers (e.g. uncertainty regarding ultimate number of deaths).')
+st.write('Also note: federal prisons were excluded from these analyses, since the Marshall data placed them in a separate category (rather than grouping them with their state\'s data). The Marshall data did not include D.C. data, so D.C. was also omitted from these analyses. Finally&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
 st.write('In addition, prison mortality rates were estimated using population figures retrieved as early as January 2020.')
 st.markdown('<b>The US has a mass incarceration problem.</b> Of all the prisoners in the world, 20% are held in the US ([Source](https://www.prisonpolicy.org/blog/2020/01/16/percent-incarcerated/)). And over the course of the COVID-19 pandemic, many prisons have failed to take adequate measures to protect prisoners from the disease.', unsafe_allow_html = True)
 
