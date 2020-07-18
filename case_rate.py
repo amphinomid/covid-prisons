@@ -7,6 +7,8 @@ from datetime import datetime
 # Add slider (see how these variables changed with respect to each other over the course of the outbreak), keep scale same across time (for slider), prob need st.cache
 # Add animations, then deploy
 
+# Change "mortality" to "case rate"
+
 
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
 prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
