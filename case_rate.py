@@ -13,7 +13,7 @@ from datetime import datetime
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
 prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
                     names = ["name", "abbreviation", "april_pop", "as_of_date"],
-                    usecols = ["name", "april_pop", "as_of_date"],
+                    usecols = ["name", "april_pop"],
                     skiprows = 1,
                     )
 nationwide_prison_pop_data = {"name": "NATIONWIDE", "april_pop": prison_pop_data.sum(0).loc["april_pop"], "as_of_date": "N/A"}
@@ -24,7 +24,7 @@ covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
                     names = ["name", "abbreviation", "staff_tests", "staff_tests_with_multiples", "prisoner_tests", "prisoner_tests_with_multiples",
                             "total_staff_cases", "total_prisoner_cases", "staff_recovered", "prisoners_recovered", "total_staff_deaths","total_prisoner_deaths",
                             "as_of_date", "notes"],
-                    usecols = ["name", "total_prisoner_cases"],
+                    usecols = ["name", "total_prisoner_cases", "as_of_date"],
                     skiprows = 1, # Change according to date
                     )
 covid_prison_data["Prison_CR"] = covid_prison_data["total_prisoner_cases"] * 100000 / prison_pop_data["april_pop"]
@@ -263,7 +263,7 @@ st.title('COVID-19 in US Prisons, as Told by Data')
 
 
 # Show grid map with Plotly
-st.markdown('<h3>Map of Mortality</h3>', unsafe_allow_html = True)
+st.markdown('<h3>Map of Case Rate</h3>', unsafe_allow_html = True)
 st.plotly_chart(make_grid())
 
 
@@ -285,7 +285,7 @@ bar_chart.add_trace(go.Bar(
     marker_color = '#000000',
 ))
 bar_chart.update_layout(
-    xaxis_title = 'COVID-19 Mortality Rate (deaths per 100000 persons)',
+    xaxis_title = 'COVID-19 Case Rate (confirmed cases per 100000 persons)',
     yaxis_title = 'State',
     width = 1000,
     height = 1100,
@@ -305,7 +305,7 @@ st.write('As of ' + as_of_date + '.')
 
 st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
 st.write(covid_prison_data)
-st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system. Here, "total_prisoner_deaths" refers to confirmed deaths due to COVID-19 in US state prisons, while "Prison_CR" refers to estimated mortality rates, calculated using total prisoner deaths and populations (see below).')
+st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system. Here, "total_prisoner_cases" refers to confirmed cases due to COVID-19 in US state prisons, while "Prison_CR" refers to estimated case rates, calculated using total prisoner cases and populations (see below).')
 
 st.markdown('<h4>US State Prison Populations</h4>', unsafe_allow_html = True)
 st.write(prison_pop_data)
@@ -313,7 +313,7 @@ st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) fro
 
 st.markdown('<h4>COVID-19 in US States</h4>', unsafe_allow_html = True)
 st.write(covid_data)
-st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Here, "Confirmed" refers to confirmed COVID-19 cases in US states, "Deaths" refers to recorded deaths due to COVID-19, "Incident_Rate" refers to confirmed cases per 100000 persons, and "State_CR" refers to estimated mortality rates, calculated using deaths and populations (found by algebraically manipulating "Incident_Rate").')
+st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Here, "Confirmed" refers to confirmed COVID-19 cases in US states, while "State_CR" refers to estimated case rates, provided directly by the dataset as "Incident_Rate" and calculated as confirmed cases per 100000 persons ("NATIONWIDE" figure was calculated using sum of cases and sum of populations, found by algebraically manipulating "State_CR").')
 
 st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
 st.write(combined_data)
@@ -321,9 +321,9 @@ st.write(combined_data)
 
 # Explanation of epidemiological terms, potential problems, and other discussion
 st.markdown('<h3>Epidemiological terms, caveats, discussion</h3>', unsafe_allow_html = True)
-st.markdown('Mortality rate is an epidemiological measure of the frequency of death in a population due to a disease. A formula for mortality rate is as follows: <i>number of recorded deaths * 100000 / population</i>.', unsafe_allow_html = True)
+st.markdown('Case rate is a measure of how widespread an illness is in a population. A formula for case rate is as follows: <i>number of confirmed cases * 100000 / population</i>.', unsafe_allow_html = True)
 st.write('Some caveats include: (1) underreporting, (2) at any given moment, the instantaneous numbers may not reflect the ultimate numbers (e.g. uncertainty regarding ultimate number of deaths).')
 st.write('Also note: federal prisons were excluded from these analyses, since the Marshall data placed them in a separate category (rather than grouping them with their state\'s data). The Marshall data did not include D.C. data, so D.C. was also omitted from these analyses. Finally&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
-st.write('In addition, prison mortality rates were estimated using population figures retrieved as early as January 2020.')
+st.write('In addition, prison case rates were estimated using population figures retrieved as early as January 2020.')
 st.markdown('<b>The US has a mass incarceration problem.</b> Of all the prisoners in the world, 20% are held in the US ([Source](https://www.prisonpolicy.org/blog/2020/01/16/percent-incarcerated/)). And over the course of the COVID-19 pandemic, many prisons have failed to take adequate measures to protect prisoners from the disease.', unsafe_allow_html = True)
 
