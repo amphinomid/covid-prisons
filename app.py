@@ -280,39 +280,11 @@ def make_grid(metric, color):
 st.title('COVID-19 in US Prisons, as Told by Data')
 
 
-# Show/hide grid maps & bar charts with Streamlit checkboxes
-cr_check = st.checkbox('Case Rate', value = True)
-if cr_check:
-    st.plotly_chart(make_grid('CR', '#F13B3B'))
-    cr_chart = go.Figure()
-    cr_chart.add_trace(go.Bar(
-        x = combined_data['Prison_CR'],
-        y = combined_data['name'],
-        orientation = 'h',
-        name = 'In prisons',
-        marker_color = '#F13B3B',
-        ))
-    cr_chart.add_trace(go.Bar(
-        x = combined_data['State_CR'],
-        y = combined_data['name'],
-        orientation = 'h',
-        name = 'Statewide',
-        marker_color = '#000000',
-        ))
-    cr_chart.update_layout(
-        xaxis_title = 'COVID-19 Case Rate (confirmed cases per 100000 persons)',
-        yaxis_title = 'State',
-        width = 1000,
-        height = 1100,
-        barmode = 'group',
-        bargap = 0.4,
-        plot_bgcolor = '#ffffff',
-        font = dict(family = 'IBM Plex Sans', size = 14, color = '#000000'),
-        )
-    cr_chart.update_yaxes(autorange = 'reversed')
-    st.write(cr_chart)
-mr_check = st.checkbox('Mortality Rate')
-if mr_check:
+# Show/hide grid maps & bar charts with Streamlit radio buttons
+# CSS for horizontal radio button layout from https://discuss.streamlit.io/t/horizontal-radio-buttons/2114
+display_data = st.radio('', ('Case Rate', 'Mortality Rate', 'Case-Fatality Ratio'))
+st.write('<style> div.Widget.row-widget.stRadio > div { flex-direction: row; justify-content: space-between; width: 580px; } </style>', unsafe_allow_html=True)
+if display_data == 'Mortality Rate':
     st.plotly_chart(make_grid('MR', '#1E88E5'))
     mr_chart = go.Figure()
     mr_chart.add_trace(go.Bar(
@@ -341,8 +313,7 @@ if mr_check:
         )
     mr_chart.update_yaxes(autorange = 'reversed')
     st.write(mr_chart)
-cfr_check = st.checkbox('Case-Fatality Ratio')
-if cfr_check:
+elif display_data == 'Case-Fatality Ratio':
     st.plotly_chart(make_grid('CFR', '#FFC107'))
     cfr_chart = go.Figure()
     cfr_chart.add_trace(go.Bar(
@@ -371,15 +342,35 @@ if cfr_check:
         )
     cfr_chart.update_yaxes(autorange = 'reversed')
     st.write(cfr_chart)
-if cr_check:
-    mr_check = False
-    cfr_check = False
-if mr_check:
-    cr_check = False
-    cfr_check = False
-if cfr_check:
-    cr_check = False
-    mr_check = False
+else:
+    st.plotly_chart(make_grid('CR', '#F13B3B'))
+    cr_chart = go.Figure()
+    cr_chart.add_trace(go.Bar(
+        x = combined_data['Prison_CR'],
+        y = combined_data['name'],
+        orientation = 'h',
+        name = 'In prisons',
+        marker_color = '#F13B3B',
+        ))
+    cr_chart.add_trace(go.Bar(
+        x = combined_data['State_CR'],
+        y = combined_data['name'],
+        orientation = 'h',
+        name = 'Statewide',
+        marker_color = '#000000',
+        ))
+    cr_chart.update_layout(
+        xaxis_title = 'COVID-19 Case Rate (confirmed cases per 100000 persons)',
+        yaxis_title = 'State',
+        width = 1000,
+        height = 1100,
+        barmode = 'group',
+        bargap = 0.4,
+        plot_bgcolor = '#ffffff',
+        font = dict(family = 'IBM Plex Sans', size = 14, color = '#000000'),
+        )
+    cr_chart.update_yaxes(autorange = 'reversed')
+    st.write(cr_chart)
 
 
 # Show data with Streamlit
