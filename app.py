@@ -4,58 +4,67 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 
-# Note: make CFR 100000 too, fix data descriptions, change color scheme, style checkboxes, animate charts
+# Note: make CFR 100000 too, fix data descriptions, change color scheme, style checkboxes, only allow one checked at a time, animate charts
 
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
-prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
-                              names = ['name', 'abbreviation', 'april_pop', 'as_of_date'],
-                              usecols = ['name', 'april_pop', 'as_of_date'],
-                              skiprows = 1,
-                              )
-nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'april_pop': prison_pop_data.sum(0).loc['april_pop'], 'as_of_date': 'N/A'}
-prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
+@st.cache
+def load_prison_pop_data():
+    prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
+                                  names = ['name', 'abbreviation', 'april_pop', 'as_of_date'],
+                                  usecols = ['name', 'april_pop', 'as_of_date'],
+                                  skiprows = 1,
+                                  )
+    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'april_pop': prison_pop_data.sum(0).loc['april_pop'], 'as_of_date': 'N/A'}
+    prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
+    return prison_pop_data
+prison_pop_data = load_prison_pop_data()
 
 COVID_PRISON_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/covid_prison_cases.csv')
-covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
-                                names = ['name', 'abbreviation', 'staff_tests', 'staff_tests_with_multiples', 'prisoner_tests',
-                                         'prisoner_test_with_multiples', 'total_staff_cases', 'total_prisoner_cases', 'staff_recovered',
-                                         'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date', 'notes'],
-                                usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
-                                skiprows = 1, # Can change according to date
-                                )
-covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['april_pop']
-covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['april_pop']
-covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
-
-nationwide_covid_prison_data = {'name': 'NATIONWIDE', 'total_prisoner_cases': covid_prison_data.sum(0).loc['total_prisoner_cases'],
-                                'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'], 'as_of_date': 'N/A',
-                                'Prison_CR': '', 'Prison_MR': '', 'Prison_CFR': ''}
-nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
-nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
-nationwide_covid_prison_data['Prison_CFR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / nationwide_covid_prison_data['total_prisoner_cases']
-covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
+@st.cache
+def load_covid_prison_data():
+    covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
+                                    names = ['name', 'abbreviation', 'staff_tests', 'staff_tests_with_multiples', 'prisoner_tests',
+                                             'prisoner_test_with_multiples', 'total_staff_cases', 'total_prisoner_cases', 'staff_recovered',
+                                             'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date', 'notes'],
+                                    usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
+                                    skiprows = 1, # Can change according to date
+                                    )
+    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['april_pop']
+    covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['april_pop']
+    covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
+    nationwide_covid_prison_data = {'name': 'NATIONWIDE', 'total_prisoner_cases': covid_prison_data.sum(0).loc['total_prisoner_cases'],
+                                    'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'], 'as_of_date': 'N/A',
+                                    'Prison_CR': '', 'Prison_MR': '', 'Prison_CFR': ''}
+    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
+    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
+    nationwide_covid_prison_data['Prison_CFR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / nationwide_covid_prison_data['total_prisoner_cases']
+    covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
+    return covid_prison_data
+covid_prison_data = load_covid_prison_data()
 
 COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-14-2020.csv') # Can change according to date
-covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
-                         names = ['Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_', 'Confirmed', 'Deaths', 'Recovered',
-                                  'Active', 'FIPS', 'Incident_Rate', 'People_Tested', 'People_Hospitalized', 'Mortality_Rate', 'UID',
-                                  'ISO3', 'Testing_Rate', 'Hospitalization_Rate'],
-                         usecols = ['Province_State', 'Confirmed', 'Deaths', 'Incident_Rate', 'Mortality_Rate'],
-                         skiprows = [0, 3, 10, 11, 14, 15, 40, 45, 53],
-                         )
-covid_data = covid_data.rename(columns = {'Incident_Rate': 'State_CR'})
-covid_data = covid_data.rename(columns = {'Mortality_Rate': 'State_CFR'})
-covid_data['State_CFR'] = covid_data['State_CFR'] * 1000
-covid_data['population'] = (covid_data['Confirmed'] * 100000 / covid_data['State_CR']).astype(int)
-covid_data['State_MR'] = covid_data['Deaths'] * 100000 / covid_data['population']
-
-nationwide_covid_data = {'Province_State': 'NATIONWIDE', 'Confirmed': covid_data.sum(0).loc['Confirmed'], 'Deaths': covid_data.sum(0).loc['Deaths'],
-                         'State_CR': '', 'State_CFR': '', 'population': covid_data.sum(0).loc['population'], 'State_MR': ''}
-nationwide_covid_data['State_CR'] = nationwide_covid_data['Confirmed'] * 100000 / nationwide_covid_data['population']
-nationwide_covid_data['State_CFR'] = nationwide_covid_data['Deaths'] * 100000 / nationwide_covid_data['Confirmed']
-nationwide_covid_data['State_MR'] = nationwide_covid_data['Deaths'] * 100000 / nationwide_covid_data['population']
-covid_data = covid_data.append(nationwide_covid_data, ignore_index = True)
-
+@st.cache
+def load_covid_data():
+    covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
+                             names = ['Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_', 'Confirmed', 'Deaths', 'Recovered',
+                                      'Active', 'FIPS', 'Incident_Rate', 'People_Tested', 'People_Hospitalized', 'Mortality_Rate', 'UID',
+                                      'ISO3', 'Testing_Rate', 'Hospitalization_Rate'],
+                             usecols = ['Province_State', 'Confirmed', 'Deaths', 'Incident_Rate', 'Mortality_Rate'],
+                             skiprows = [0, 3, 10, 11, 14, 15, 40, 45, 53],
+                             )
+    covid_data = covid_data.rename(columns = {'Incident_Rate': 'State_CR'})
+    covid_data = covid_data.rename(columns = {'Mortality_Rate': 'State_CFR'})
+    covid_data['State_CFR'] = covid_data['State_CFR'] * 1000
+    covid_data['population'] = (covid_data['Confirmed'] * 100000 / covid_data['State_CR']).astype(int)
+    covid_data['State_MR'] = covid_data['Deaths'] * 100000 / covid_data['population']
+    nationwide_covid_data = {'Province_State': 'NATIONWIDE', 'Confirmed': covid_data.sum(0).loc['Confirmed'], 'Deaths': covid_data.sum(0).loc['Deaths'],
+                             'State_CR': '', 'State_CFR': '', 'population': covid_data.sum(0).loc['population'], 'State_MR': ''}
+    nationwide_covid_data['State_CR'] = nationwide_covid_data['Confirmed'] * 100000 / nationwide_covid_data['population']
+    nationwide_covid_data['State_CFR'] = nationwide_covid_data['Deaths'] * 100000 / nationwide_covid_data['Confirmed']
+    nationwide_covid_data['State_MR'] = nationwide_covid_data['Deaths'] * 100000 / nationwide_covid_data['population']
+    covid_data = covid_data.append(nationwide_covid_data, ignore_index = True)
+    return covid_data
+covid_data = load_covid_data()
 
 combined_data = pd.concat([covid_prison_data, covid_data], axis = 1)
 combined_data = combined_data.drop(columns = ['total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date', 'Province_State', 'Confirmed', 'Deaths',
@@ -64,7 +73,7 @@ combined_data = combined_data.drop(columns = ['total_prisoner_cases', 'total_pri
 
 # Create grid map with Plotly subplots
 # Based off grid from http://awesome-streamlit.org --> Gallery --> 'Layout and Style Experiments'
-def make_grid(metric):
+def make_grid(metric, color):
     grid = make_subplots(
         rows = 9,
         cols = 12,
@@ -91,157 +100,157 @@ def make_grid(metric):
         ],
     )
 
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Maine']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', name = 'In prisons'), row = 1, col = 12)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Maine']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', name = 'In prisons'), row = 1, col = 12)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Maine']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', name = 'Statewide'), row = 1, col = 12)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Washington']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 1)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Washington']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 1)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Washington']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 1)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Montana']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 2)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Montana']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 2)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Montana']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 2)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'North Dakota']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 3)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'North Dakota']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 3)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'North Dakota']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 3)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Minnesota']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 4)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Minnesota']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 4)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Minnesota']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 4)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Wisconsin']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 5)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Wisconsin']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 5)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Wisconsin']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 5)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Michigan']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 6)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Michigan']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 6)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Michigan']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 6)
    
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New York']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 9)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New York']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 9)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'New York']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 9)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Vermont']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 10)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Vermont']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 10)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Vermont']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 10)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New Hampshire']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 11)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New Hampshire']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 11)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'New Hampshire']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 11)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Massachusetts']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 2, col = 12)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Massachusetts']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 2, col = 12)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Massachusetts']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 2, col = 12)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Oregon']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 1)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Oregon']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 1)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Oregon']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 1)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Idaho']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 2)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Idaho']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 2)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Idaho']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 2)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Wyoming']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 3)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Wyoming']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 3)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Wyoming']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 3)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'South Dakota']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 4)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'South Dakota']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 4)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'South Dakota']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 4)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Iowa']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 5)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Iowa']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 5)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Iowa']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 5)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Illinois']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 6)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Illinois']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 6)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Illinois']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 6)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Indiana']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 7)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Indiana']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 7)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Indiana']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 7)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Ohio']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 8)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Ohio']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 8)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Ohio']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 8)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Pennsylvania']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 9)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Pennsylvania']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 9)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Pennsylvania']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 9)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New Jersey']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 10)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New Jersey']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 10)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'New Jersey']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 10)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Connecticut']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 11)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Connecticut']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 11)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Connecticut']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 11)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Rhode Island']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 3, col = 12)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Rhode Island']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 3, col = 12)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Rhode Island']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 3, col = 12)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Nevada']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 1)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Nevada']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 1)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Nevada']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 1)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Utah']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 2)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Utah']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 2)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Utah']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 2)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Colorado']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 3)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Colorado']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 3)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Colorado']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 3)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Nebraska']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 4)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Nebraska']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 4)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Nebraska']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 4)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Kansas']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 5)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Kansas']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 5)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Kansas']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 5)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Missouri']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 6)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Missouri']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 6)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Missouri']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 6)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Tennessee']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 7)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Tennessee']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 7)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Tennessee']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 7)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Kentucky']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 8)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Kentucky']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 8)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Kentucky']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 8)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'West Virginia']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 9)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'West Virginia']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 9)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'West Virginia']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 9)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Virginia']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 10)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Virginia']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 10)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Virginia']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 10)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Maryland']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 11)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Maryland']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 11)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Maryland']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 11)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Delaware']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 4, col = 12)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Delaware']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 4, col = 12)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Delaware']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 4, col = 12)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'California']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 2)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'California']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 2)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'California']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 2)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Arizona']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 3)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Arizona']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 3)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Arizona']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 3)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New Mexico']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 4)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'New Mexico']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 4)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'New Mexico']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 4)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Oklahoma']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 5)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Oklahoma']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 5)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Oklahoma']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 5)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Arkansas']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 6)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Arkansas']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 6)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Arkansas']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 6)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Mississippi']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 7)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Mississippi']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 7)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Mississippi']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 7)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Alabama']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 8)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Alabama']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 8)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Alabama']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 8)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Georgia']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 9)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Georgia']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 9)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Georgia']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 9)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'South Carolina']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 10)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'South Carolina']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 10)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'South Carolina']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 10)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'North Carolina']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 5, col = 11)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'North Carolina']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 5, col = 11)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'North Carolina']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 5, col = 11)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Texas']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 6, col = 5)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Texas']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 6, col = 5)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Texas']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 6, col = 5)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Louisiana']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 6, col = 6)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Louisiana']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 6, col = 6)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Louisiana']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 6, col = 6)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Florida']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 6, col = 9)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Florida']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 6, col = 9)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Florida']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 6, col = 9)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Alaska']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 8, col = 2)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Alaska']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 8, col = 2)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Alaska']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 2)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 8, col = 4)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 8, col = 4)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Hawaii']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 4)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'NATIONWIDE']['Prison_' + metric], width = 0.3, marker_color = '#f13b3b', legendgroup = '1', showlegend = False), row = 8, col = 11)
+    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'NATIONWIDE']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 8, col = 11)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'NATIONWIDE']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 11)
 
     grid.update_layout(
@@ -272,15 +281,16 @@ st.title('COVID-19 in US Prisons, as Told by Data')
 
 
 # Show/hide grid maps & bar charts with Streamlit checkboxes
-if st.checkbox('Case Rate'):
-    st.plotly_chart(make_grid('CR'))
+cr_check = st.checkbox('Case Rate', value = True)
+if cr_check:
+    st.plotly_chart(make_grid('CR', '#F13B3B'))
     cr_chart = go.Figure()
     cr_chart.add_trace(go.Bar(
         x = combined_data['Prison_CR'],
         y = combined_data['name'],
         orientation = 'h',
         name = 'In prisons',
-        marker_color = '#f13b3b',
+        marker_color = '#F13B3B',
         ))
     cr_chart.add_trace(go.Bar(
         x = combined_data['State_CR'],
@@ -301,15 +311,16 @@ if st.checkbox('Case Rate'):
         )
     cr_chart.update_yaxes(autorange = 'reversed')
     st.write(cr_chart)
-if st.checkbox('Mortality Rate'):
-    st.plotly_chart(make_grid('MR'))
+mr_check = st.checkbox('Mortality Rate')
+if mr_check:
+    st.plotly_chart(make_grid('MR', '#1E88E5'))
     mr_chart = go.Figure()
     mr_chart.add_trace(go.Bar(
         x = combined_data['Prison_MR'],
         y = combined_data['name'],
         orientation = 'h',
         name = 'In prisons',
-        marker_color = '#f13b3b',
+        marker_color = '#1E88E5',
         ))
     mr_chart.add_trace(go.Bar(
         x = combined_data['State_MR'],
@@ -330,15 +341,16 @@ if st.checkbox('Mortality Rate'):
         )
     mr_chart.update_yaxes(autorange = 'reversed')
     st.write(mr_chart)
-if st.checkbox('Case-Fatality Ratio'):
-    st.plotly_chart(make_grid('CFR'))
+cfr_check = st.checkbox('Case-Fatality Ratio')
+if cfr_check:
+    st.plotly_chart(make_grid('CFR', '#FFC107'))
     cfr_chart = go.Figure()
     cfr_chart.add_trace(go.Bar(
         x = combined_data['Prison_CFR'],
         y = combined_data['name'],
         orientation = 'h',
         name = 'In prisons',
-        marker_color = '#f13b3b',
+        marker_color = '#FFC107',
         ))
     cfr_chart.add_trace(go.Bar(
         x = combined_data['State_CFR'],
@@ -359,6 +371,15 @@ if st.checkbox('Case-Fatality Ratio'):
         )
     cfr_chart.update_yaxes(autorange = 'reversed')
     st.write(cfr_chart)
+if cr_check:
+    mr_check = False
+    cfr_check = False
+if mr_check:
+    cr_check = False
+    cfr_check = False
+if cfr_check:
+    cr_check = False
+    mr_check = False
 
 
 # Show data with Streamlit
