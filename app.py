@@ -302,7 +302,7 @@ if display_data == 'Mortality Rate':
         marker_color = '#000000',
         ))
     mr_chart.update_layout(
-        xaxis_title = 'COVID-19 Mortality Rate (confirmed deaths per 100000 persons)',
+        xaxis_title = 'COVID-19 Mortality Rate (confirmed deaths per 100,000 persons)',
         yaxis_title = 'State',
         width = 1000,
         height = 1100,
@@ -331,7 +331,7 @@ elif display_data == 'Case-Fatality Ratio':
         marker_color = '#000000',
         ))
     cfr_chart.update_layout(
-        xaxis_title = 'COVID-19 Case-Fatality Ratio (confirmed deaths per 100000 confirmed cases)',
+        xaxis_title = 'COVID-19 Case-Fatality Ratio (confirmed deaths per 100,000 confirmed cases)',
         yaxis_title = 'State',
         width = 1000,
         height = 1100,
@@ -360,7 +360,7 @@ else:
         marker_color = '#000000',
         ))
     cr_chart.update_layout(
-        xaxis_title = 'COVID-19 Case Rate (confirmed cases per 100000 persons)',
+        xaxis_title = 'COVID-19 Case Rate (confirmed cases per 100,000 persons)',
         yaxis_title = 'State',
         width = 1000,
         height = 1100,
