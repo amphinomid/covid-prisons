@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 
-# Note: make CFR 100000 too, fix data descriptions, change color scheme, style checkboxes, only allow one checked at a time, animate charts
+# Note: improve / beautify data descriptions & epidemiological terms, caveats, discussion; animate charts
 
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
 @st.cache
@@ -26,14 +26,14 @@ def load_covid_prison_data():
                                     names = ['name', 'abbreviation', 'staff_tests', 'staff_tests_with_multiples', 'prisoner_tests',
                                              'prisoner_test_with_multiples', 'total_staff_cases', 'total_prisoner_cases', 'staff_recovered',
                                              'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date', 'notes'],
-                                    usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
+                                    usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths'],
                                     skiprows = 1, # Can change according to date
                                     )
     covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['april_pop']
     covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['april_pop']
     covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
     nationwide_covid_prison_data = {'name': 'NATIONWIDE', 'total_prisoner_cases': covid_prison_data.sum(0).loc['total_prisoner_cases'],
-                                    'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'], 'as_of_date': 'N/A',
+                                    'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'],
                                     'Prison_CR': '', 'Prison_MR': '', 'Prison_CFR': ''}
     nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
     nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
@@ -67,7 +67,7 @@ def load_covid_data():
 covid_data = load_covid_data()
 
 combined_data = pd.concat([covid_prison_data, covid_data], axis = 1)
-combined_data = combined_data.drop(columns = ['total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date', 'Province_State', 'Confirmed', 'Deaths',
+combined_data = combined_data.drop(columns = ['total_prisoner_cases', 'total_prisoner_deaths', 'Province_State', 'Confirmed', 'Deaths',
                                               'population'])
 
 
@@ -373,25 +373,41 @@ else:
     st.write(cr_chart)
 
 
-# Show data with Streamlit
-st.markdown('<h3>Data</h3>', unsafe_allow_html = True)
-as_of_date = datetime.strptime(COVID_DATA_URL[115: -4], '%m-%d-%Y').strftime('%B %d, %Y')
-st.write('As of ' + as_of_date + '.')
+# Show/hide data with Streamlit checkbox
+if st.checkbox('Show Data'):
+    as_of_date = datetime.strptime(COVID_DATA_URL[115: -4], '%m-%d-%Y').strftime('%B %d, %Y')
+    st.write('Data as of ' + as_of_date + ' (except prison population data, for which date is indicated in the datatable).')
 
-st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
-st.write(covid_prison_data)
-st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system. Here, "total_prisoner_cases" refers to confirmed cases due to COVID-19 in US state prisons, while "Prison_CR" refers to estimated case rates, calculated using total prisoner cases and populations (see below).')
+    st.markdown('<h4>US State Prison Populations</h4>', unsafe_allow_html = True)
+    st.write(prison_pop_data)
+    st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
+    st.write('april_pop: "The total population of people held in the agency\'s prisons and secure facilities."')
+    st.write('as_of_date: "The date the data reflect. In some instances, an April figure was not available, and we used the most recent number the agency could provide."')
 
-st.markdown('<h4>US State Prison Populations</h4>', unsafe_allow_html = True)
-st.write(prison_pop_data)
-st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system. Here, "april_pop" refers to state prison populations (retrieved as close to April 15 as possible), while "as_of_date" refers to the actual retrieval date.')
+    st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
+    covid_prison_data = covid_prison_data[['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'Prison_CR', 'Prison_MR', 'Prison_CFR']]
+    st.write(covid_prison_data)
+    st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
+    st.write('total_prisoner_cases: "The cumulative number of positive coronavirus cases among the incarcerated population."')
+    st.write('total_prisoner_deaths: "The number of deaths of prisoners to date."')
+    st.write('Prison_CR: prison case rate; calculated as total_prisoner_cases * 100000 / population (from prison population data).')
+    st.write('Prison_MR: prison mortality rate; calculated as total_prisoner_deaths * 100000 / population (from prison population data).')
+    st.write('Prison_CFR: prison case-fatality ratio; calculated as total_prisoner_deaths * 100000 / total_prisoner_cases.')
 
-st.markdown('<h4>COVID-19 in US States</h4>', unsafe_allow_html = True)
-st.write(covid_data)
-st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Here, "Confirmed" refers to confirmed COVID-19 cases in US states, while "State_CR" refers to estimated case rates, provided directly by the dataset as "Incident_Rate" and calculated as confirmed cases per 100000 persons ("NATIONWIDE" figure was calculated using sum of cases and sum of populations, found by algebraically manipulating "State_CR").')
+    st.markdown('<h4>COVID-19 in US States</h4>', unsafe_allow_html = True)
+    covid_data = covid_data[['Province_State', 'Confirmed', 'Deaths', 'population', 'State_CR', 'State_MR', 'State_CFR']]
+    st.write(covid_data)
+    st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University.')
+    st.write('Confirmed: "Aggregated confirmed case count for the state."')
+    st.write('Deaths: "Aggregated Death case count for the state."')
+    st.write('population: calculated using State_CR, provided as "Incident_Rate" by the dataset; population = Confirmed * 100000 / Incident_Rate.')
+    st.write('State_CR: state case rate; provided as "Incident_Rate" by the dataset; "confirmed cases per 100,000 persons."')
+    st.write('State_MR: state mortality rate; calculated as Deaths * 100000 / population.')
+    st.write('State_CFR: state case-fatality ratio; provided as "Mortality_Rate" by the dataset, except was per 100 confirmed cases ("Number recorded deaths * 100/ Number confirmed cases"); multipled by 1,000 to convert to number of recorded deaths per 100,000 confirmed cases.')
 
-st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
-st.write(combined_data)
+    st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
+    combined_data = combined_data[['name', 'Prison_CR', 'Prison_MR', 'Prison_CFR', 'State_CR', 'State_MR', 'State_CFR']]
+    st.write(combined_data)
 
 
 # Explanation of epidemiological terms, potential problems, and other discussion
