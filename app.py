@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 
-# Note: improve / beautify data descriptions & epidemiological terms, caveats, discussion; animate charts
+# Note: consider adding test-positivity rate; animate charts
 
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
 @st.cache
@@ -410,12 +410,18 @@ if st.checkbox('Show Data'):
     st.write(combined_data)
 
 
-# Explanation of epidemiological terms, potential problems, and other discussion
-st.markdown('<h3>Epidemiological terms, caveats, discussion</h3>', unsafe_allow_html = True)
-st.markdown('<b>Case rate</b> estimates how widespread an illness is within a population. A formula for case rate is as follows: <i>number of confirmed cases * 100000 / population</i>.', unsafe_allow_html = True)
-st.markdown('<b>Mortality rate</b> estimates how deadly an illness is within a population. A formula for mortality rate is as follows: <i>number of recorded deaths * 100000 / population</i>.', unsafe_allow_html = True)
-st.markdown('<b>Case-fatality ratio</b> estimates how deadly an illness is amongst those who contract it. A formula for case-fatality ratio is as follows: <i>number of recorded deaths * 100000 / number of confirmed cases</i>.', unsafe_allow_html = True)
-st.write('Some caveats include: (1) underreporting, (2) at any given moment, the instantaneous numbers may not reflect the ultimate numbers (e.g. uncertainty regarding ultimate number of deaths).')
-st.write('Also note: federal prisons and D.C. were excluded from these analyses; the Marshall data did not include D.C. data, and placed federal prisons in a separate category (rather than grouping them with their state\'s data). Furthermore&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
-st.write('In addition, prison case rates were estimated using population figures retrieved as early as January 2020.')
-st.markdown('<b>The US has a mass incarceration problem.</b> Of all the prisoners in the world, 20% are held in the US ([Source](https://www.prisonpolicy.org/blog/2020/01/16/percent-incarcerated/)). And over the course of the COVID-19 pandemic, many prisons have failed to take adequate measures to protect prisoners from the disease.', unsafe_allow_html = True)
+# Explanation of terms, potential problems, and other discussion
+st.markdown('<h3>Explanation of terms, caveats, discussion</h3>', unsafe_allow_html = True)
+st.markdown('<b>Case rate</b> estimates how widespread an illness is. A formula for case rate is as follows: <i>number of confirmed cases * 100000 / population</i>.', unsafe_allow_html = True)
+st.markdown('<b>Mortality rate</b> estimates how widespread death caused by an illness is. A formula for mortality rate is as follows: <i>number of recorded deaths * 100000 / population</i>.', unsafe_allow_html = True)
+st.markdown('<b>Case-fatality ratio</b> estimates how deadly an illness is. A formula for case-fatality ratio is as follows: <i>number of recorded deaths * 100000 / number of confirmed cases</i>.', unsafe_allow_html = True)
+st.write('Note: these data likely reflect underreporting (some COVID-19 cases and deaths are never ultimately confirmed) and data lag (it takes time for new case and death data to show up on official reports, and some currently-active cases may ultimately, unfortunately, result in death). Case rate, mortality rate, case-fatality ratio, and other metrics depend on both (a) an outbreak itself and (b) our response to it (for example, testing).')
+st.write('Also: federal prisons and D.C. were excluded from these analyses; the Marshall data did not include D.C. data, and placed federal prisons in a separate category (rather than grouping them with their state\'s data). Furthermore&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
+st.write('In addition, prison case and mortality rates were estimated using prison population figures retrieved as early as January 2020.')
+st.markdown('<b>The US has a mass incarceration problem.</b> According to the [American Civil Liberties Union (ACLU)](https://www.aclu.org/issues/smart-justice/mass-incarceration), "despite making up close to 5% of the global population, the U.S. has nearly 25% of the world\'s prison population". And over the course of the COVID-19 pandemic, many state and local governments have failed to take adequate measures to protect prisoners from the disease. Prisoners interact with staff who travel in-and-out of the surrounding community, and live in cramped, crowded, and often unsanitary facilities.', unsafe_allow_html = True)
+st.write('I wanted to make this data app to explore the impact of COVID-19 in US prisons, compared to the nonincarcerated population.')
+st.markdown('More on interpreting COVID-19 data: [How to Understand COVID-19 Numbers | ProPublica](https://www.propublica.org/article/how-to-understand-covid-19-numbers?utm_source=sailthru&utm_medium=email&utm_campaign=majorinvestigations&utm_content=feature).')
+st.markdown('More on mass incarceration: [Mass Incarceration | ACLU](https://www.aclu.org/issues/smart-justice/mass-incarceration).')
+st.markdown('More on COVID-19 in prisons, including its implications for minorities&#8212especially Black people, who face both higher incarceration rates and higher COVID-19 mortality rates compared to other racial groups&#8212as well as testing strategies and prison population changes: [How U.S. Prisons Became Ground Zero for Covid-19 | Politico](https://www.politico.com/news/magazine/2020/06/25/criminal-justice-prison-conditions-coronavirus-in-prisons-338022).')
+st.markdown('View the source code for this project [here](https://github.com/fibanneacci/covid-prisons).')
+
