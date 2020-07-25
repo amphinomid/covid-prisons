@@ -27,7 +27,7 @@ def load_covid_prison_data():
                                              'prisoner_test_with_multiples', 'total_staff_cases', 'total_prisoner_cases', 'staff_recovered',
                                              'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date', 'notes'],
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths'],
-                                    skiprows = 1, # Can change according to date
+                                    skiprows = 1, # Change according to date
                                     )
     covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['april_pop']
     covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['april_pop']
@@ -42,7 +42,7 @@ def load_covid_prison_data():
     return covid_prison_data
 covid_prison_data = load_covid_prison_data()
 
-COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-14-2020.csv') # Can change according to date
+COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-21-2020.csv') # Change according to date
 @st.cache
 def load_covid_data():
     covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
@@ -381,29 +381,29 @@ if st.checkbox('Show Data'):
     st.markdown('<h4>US State Prison Populations</h4>', unsafe_allow_html = True)
     st.write(prison_pop_data)
     st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
-    st.write('april_pop: "The total population of people held in the agency\'s prisons and secure facilities."')
-    st.write('as_of_date: "The date the data reflect. In some instances, an April figure was not available, and we used the most recent number the agency could provide."')
+    st.markdown('<u>april_pop:</u> "The total population of people held in the agency\'s prisons and secure facilities."', unsafe_allow_html = True)
+    st.markdown('<u>as_of_date:</u> "The date the data reflect. In some instances, an April figure was not available, and we used the most recent number the agency could provide."', unsafe_allow_html = True)
 
     st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
     covid_prison_data = covid_prison_data[['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'Prison_CR', 'Prison_MR', 'Prison_CFR']]
     st.write(covid_prison_data)
     st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
-    st.write('total_prisoner_cases: "The cumulative number of positive coronavirus cases among the incarcerated population."')
-    st.write('total_prisoner_deaths: "The number of deaths of prisoners to date."')
-    st.write('Prison_CR: prison case rate; calculated as total_prisoner_cases * 100000 / population (from prison population data).')
-    st.write('Prison_MR: prison mortality rate; calculated as total_prisoner_deaths * 100000 / population (from prison population data).')
-    st.write('Prison_CFR: prison case-fatality ratio; calculated as total_prisoner_deaths * 100000 / total_prisoner_cases.')
+    st.markdown('<u>total_prisoner_cases:</u> "The cumulative number of positive coronavirus cases among the incarcerated population."', unsafe_allow_html = True)
+    st.markdown('<u>total_prisoner_deaths:</u> "The number of deaths of prisoners to date."', unsafe_allow_html = True)
+    st.markdown('<u>Prison_CR:</u> prison case rate; calculated as <i>total_prisoner_cases * 100000 / population</i> (from prison population data).', unsafe_allow_html = True)
+    st.markdown('<u>Prison_MR:</u> prison mortality rate; calculated as <i>total_prisoner_deaths * 100000 / population</i> (from prison population data).', unsafe_allow_html = True)
+    st.markdown('<u>Prison_CFR:</u> prison case-fatality ratio; calculated as <i>total_prisoner_deaths * 100000 / total_prisoner_cases</i>.', unsafe_allow_html = True)
 
     st.markdown('<h4>COVID-19 in US States</h4>', unsafe_allow_html = True)
     covid_data = covid_data[['Province_State', 'Confirmed', 'Deaths', 'population', 'State_CR', 'State_MR', 'State_CFR']]
     st.write(covid_data)
     st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University.')
-    st.write('Confirmed: "Aggregated confirmed case count for the state."')
-    st.write('Deaths: "Aggregated Death case count for the state."')
-    st.write('population: calculated using State_CR, provided as "Incident_Rate" by the dataset; population = Confirmed * 100000 / Incident_Rate.')
-    st.write('State_CR: state case rate; provided as "Incident_Rate" by the dataset; "confirmed cases per 100,000 persons."')
-    st.write('State_MR: state mortality rate; calculated as Deaths * 100000 / population.')
-    st.write('State_CFR: state case-fatality ratio; provided as "Mortality_Rate" by the dataset, except was per 100 confirmed cases ("Number recorded deaths * 100/ Number confirmed cases"); multipled by 1,000 to convert to number of recorded deaths per 100,000 confirmed cases.')
+    st.markdown('<u>Confirmed:</u> "Aggregated confirmed case count for the state."', unsafe_allow_html = True)
+    st.markdown('<u>Deaths:</u> "Aggregated Death case count for the state."', unsafe_allow_html = True)
+    st.markdown('<u>population:</u> calculated using State_CR, provided as "Incident_Rate" by the dataset; <i>Confirmed * 100000 / Incident_Rate</i>.', unsafe_allow_html = True)
+    st.markdown('<u>State_CR:</u> state case rate; provided as "Incident_Rate" by the dataset; "confirmed cases per 100,000 persons."', unsafe_allow_html = True)
+    st.markdown('<u>State_MR:</u> state mortality rate; calculated as <i>Deaths * 100000 / population</i>.', unsafe_allow_html = True)
+    st.markdown('<u>State_CFR:</u> state case-fatality ratio; provided as "Mortality_Rate" by the dataset, except was per 100 confirmed cases ("Number recorded deaths * 100/ Number confirmed cases"); multipled by 1,000 to convert to number of recorded deaths per 100,000 confirmed cases.', unsafe_allow_html = True)
 
     st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
     combined_data = combined_data[['name', 'Prison_CR', 'Prison_MR', 'Prison_CFR', 'State_CR', 'State_MR', 'State_CFR']]
@@ -412,10 +412,10 @@ if st.checkbox('Show Data'):
 
 # Explanation of epidemiological terms, potential problems, and other discussion
 st.markdown('<h3>Epidemiological terms, caveats, discussion</h3>', unsafe_allow_html = True)
-st.markdown('Case rate is a measure of how widespread an illness is in a population. A formula for case rate is as follows: <i>number of confirmed cases * 100000 / population</i>.', unsafe_allow_html = True)
-st.markdown('Mortality rate is a measure of the frequency of death in a population due to a disease. A formula for mortality rate is as follows: <i>number of recorded deaths * 100000 / population</i>.', unsafe_allow_html = True)
-st.markdown('Case-fatality ratio is a measure of mortality. A formula for case-fatality ratio is as follows: <i>number of recorded deaths * 100 / number of confirmed cases</i>.', unsafe_allow_html = True)
+st.markdown('<b>Case rate</b> estimates how widespread an illness is within a population. A formula for case rate is as follows: <i>number of confirmed cases * 100000 / population</i>.', unsafe_allow_html = True)
+st.markdown('<b>Mortality rate</b> estimates how deadly an illness is within a population. A formula for mortality rate is as follows: <i>number of recorded deaths * 100000 / population</i>.', unsafe_allow_html = True)
+st.markdown('<b>Case-fatality ratio</b> estimates how deadly an illness is amongst those who contract it. A formula for case-fatality ratio is as follows: <i>number of recorded deaths * 100000 / number of confirmed cases</i>.', unsafe_allow_html = True)
 st.write('Some caveats include: (1) underreporting, (2) at any given moment, the instantaneous numbers may not reflect the ultimate numbers (e.g. uncertainty regarding ultimate number of deaths).')
-st.write('Also note: federal prisons were excluded from these analyses, since the Marshall data placed them in a separate category (rather than grouping them with their state\'s data). The Marshall data did not include D.C. data, so D.C. was also omitted from these analyses. Finally&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
+st.write('Also note: federal prisons and D.C. were excluded from these analyses; the Marshall data did not include D.C. data, and placed federal prisons in a separate category (rather than grouping them with their state\'s data). Furthermore&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
 st.write('In addition, prison case rates were estimated using population figures retrieved as early as January 2020.')
 st.markdown('<b>The US has a mass incarceration problem.</b> Of all the prisoners in the world, 20% are held in the US ([Source](https://www.prisonpolicy.org/blog/2020/01/16/percent-incarcerated/)). And over the course of the COVID-19 pandemic, many prisons have failed to take adequate measures to protect prisoners from the disease.', unsafe_allow_html = True)
