@@ -33,7 +33,7 @@ nationwide_covid_prison_data["Prison_CR"] = nationwide_covid_prison_data["total_
 covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
 
 
-COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-14-2020.csv') # Change according to date
+COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-21-2020.csv') # Change according to date
 covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
                     names = ["Province_State", "Country_Region", "Last_Update", "Lat", "Long_", "Confirmed", "Deaths", "Recovered", "Active", "FIPS",
                             "Incident_Rate", "People_Tested", "People_Hospitalized", "Mortality_Rate", "UID", "ISO3", "Testing_Rate", "Hospitalization_Rate"],
