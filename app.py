@@ -279,8 +279,7 @@ def make_grid(metric, color):
 
 st.title('COVID-19 in US Prisons, as Told by Data')
 
-
-# Show/hide grid maps & bar charts with Streamlit radio buttons
+# Show/hide Plotly grid maps & bar charts with Streamlit radio buttons
 # CSS for horizontal radio button layout from https://discuss.streamlit.io/t/horizontal-radio-buttons/2114
 display_data = st.radio('', ('Case Rate', 'Mortality Rate', 'Case-Fatality Ratio'))
 st.write('<style> div.Widget.row-widget.stRadio > div { flex-direction: row; justify-content: space-between; width: 580px; } </style>', unsafe_allow_html=True)
