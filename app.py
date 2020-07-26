@@ -409,9 +409,9 @@ if st.checkbox('Show Data'):
 
 # Explanation of terms, potential problems, and other discussion
 st.markdown('<h3>Explanation of terms, caveats, discussion</h3>', unsafe_allow_html = True)
-st.markdown('**Case rate** estimates how widespread an illness is. A formula for case rate is as follows: *number of confirmed cases * 100000 / population*.')
-st.markdown('**Mortality rate** estimates how widespread death caused by an illness is. A formula for mortality rate is as follows: *number of recorded deaths * 100000 / population*.')
-st.markdown('**Case-fatality ratio** estimates how deadly an illness is. A formula for case-fatality ratio is as follows: *number of recorded deaths * 100000 / number of confirmed cases*.')
+st.markdown('**Case rate** estimates how widespread an illness is. A formula for case rate is as follows: *number of confirmed cases \* 100000 / population*.')
+st.markdown('**Mortality rate** estimates how widespread death caused by an illness is. A formula for mortality rate is as follows: *number of recorded deaths \* 100000 / population*.')
+st.markdown('**Case-fatality ratio** estimates how deadly an illness is. A formula for case-fatality ratio is as follows: *number of recorded deaths \* 100000 / number of confirmed cases*.')
 st.write('Note: these data likely reflect underreporting (some COVID-19 cases and deaths are never ultimately confirmed) and data lag (it takes time for new case and death data to show up on official reports, and some currently-active cases may ultimately, unfortunately, result in death). Case rate, mortality rate, case-fatality ratio, and other metrics depend on both (a) an outbreak itself and (b) our response to it (for example, testing).')
 st.write('Also: federal prisons and D.C. were excluded from these analyses; the Marshall data did not include D.C. data, and placed federal prisons in a separate category (rather than grouping them with their state\'s data). Furthermore&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
 st.write('In addition, prison case and mortality rates were estimated using prison population figures retrieved as early as January 2020.')
