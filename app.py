@@ -4,8 +4,6 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 
-# Note: consider adding test-positivity rate; add more discussion on indiv metrics
-
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
 @st.cache
 def load_prison_pop_data():
@@ -422,6 +420,6 @@ st.write('I wanted to make this data project to explore the impact of COVID-19 i
 st.markdown('More on interpreting COVID-19 data: ["How to Understand COVID-19 Numbers"](https://www.propublica.org/article/how-to-understand-covid-19-numbers?utm_source=sailthru&utm_medium=email&utm_campaign=majorinvestigations&utm_content=feature).')
 st.markdown('More on mass incarceration: ["Mass Incarceration"](https://www.aclu.org/issues/smart-justice/mass-incarceration).')
 st.markdown('More on COVID-19 in prisons, including its implications for minorities&#8212especially Black people, who face both higher incarceration rates and higher COVID-19 mortality rates compared to other racial groups&#8212as well as testing strategies and prison population changes: ["How U.S. Prisons Became Ground Zero for Covid-19"](https://www.politico.com/news/magazine/2020/06/25/criminal-justice-prison-conditions-coronavirus-in-prisons-338022).')
-st.markdown('For a more thorough investigation of the prison data and the issues at hand, check out this article from The Marshall Project: ["A State-by-State Look at Coronavirus in Prisons"](https://www.themarshallproject.org/2020/05/01/a-state-by-state-look-at-coronavirus-in-prisons).')
+st.markdown('For a more thorough investigation of the issues at hand, check out this article from The Marshall Project, the organization that compiles the prison data I used: ["A State-by-State Look at Coronavirus in Prisons"](https://www.themarshallproject.org/2020/05/01/a-state-by-state-look-at-coronavirus-in-prisons).')
 st.write('Grid map layout inspired by this data visualization project: ["States Are Reopening: See How Coronavirus Cases Rise or Fall"](https://projects.propublica.org/reopening-america/).') 
 st.markdown('View the source code for this project [here](https://github.com/fibanneacci/covid-prisons).')
