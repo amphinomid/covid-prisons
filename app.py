@@ -387,9 +387,9 @@ if st.checkbox('Show Data'):
     st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
     st.markdown('*total_prisoner_cases:* "The cumulative number of positive coronavirus cases among the incarcerated population."')
     st.markdown('*total_prisoner_deaths:* "The number of deaths of prisoners to date."')
-    st.markdown('*Prison_CR:* prison case rate; calculated as *total_prisoner_cases * 100000 / population* (from prison population data).')
-    st.markdown('*Prison_MR:* prison mortality rate; calculated as *total_prisoner_deaths * 100000 / population* (from prison population data).')
-    st.markdown('*Prison_CFR:* prison case-fatality ratio; calculated as *total_prisoner_deaths * 100000 / total_prisoner_cases*.')
+    st.markdown('*Prison_CR:* prison case rate; calculated as *total_prisoner_cases \* 100000 / population* (from prison population data).')
+    st.markdown('*Prison_MR:* prison mortality rate; calculated as *total_prisoner_deaths \* 100000 / population* (from prison population data).')
+    st.markdown('*Prison_CFR:* prison case-fatality ratio; calculated as *total_prisoner_deaths \* 100000 / total_prisoner_cases*.')
 
     st.markdown('<h4>COVID-19 in US States</h4>', unsafe_allow_html = True)
     covid_data = covid_data[['Province_State', 'Confirmed', 'Deaths', 'population', 'State_CR', 'State_MR', 'State_CFR']]
@@ -397,9 +397,9 @@ if st.checkbox('Show Data'):
     st.markdown('[Data](https://github.com/CSSEGISandData/COVID-19) from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University.')
     st.markdown('*Confirmed:* "Aggregated confirmed case count for the state."')
     st.markdown('*Deaths:* "Aggregated Death case count for the state."')
-    st.markdown('*population:* calculated using State_CR, provided as "Incident_Rate" by the dataset; *Confirmed * 100000 / Incident_Rate*.')
+    st.markdown('*population:* calculated using State_CR, provided as "Incident_Rate" by the dataset; *Confirmed \* 100000 / Incident_Rate*.')
     st.markdown('*State_CR:* state case rate; provided as "Incident_Rate" by the dataset; "confirmed cases per 100,000 persons."')
-    st.markdown('*State_MR:* state mortality rate; calculated as *Deaths * 100000 / population*.')
+    st.markdown('*State_MR:* state mortality rate; calculated as *Deaths \* 100000 / population*.')
     st.markdown('*State_CFR:* state case-fatality ratio; provided as "Mortality_Rate" by the dataset, except was per 100 confirmed cases ("Number recorded deaths * 100/ Number confirmed cases"); multipled by 1,000 to convert to number of recorded deaths per 100,000 confirmed cases.')
 
     st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
