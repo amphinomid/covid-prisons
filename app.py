@@ -8,11 +8,12 @@ PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COV
 @st.cache
 def load_prison_pop_data():
     prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
-                                  names = ['name', 'abbreviation', 'april_pop', 'as_of_date'],
-                                  usecols = ['name', 'april_pop', 'as_of_date'],
+                                  names = ['name', 'abbreviation', 'march_pop', 'as_of_date_march',
+                                           'april_pop', 'as_of_date_april', 'june_pop', 'as_of_date_june'],
+                                  usecols = ['name', 'june_pop', 'as_of_date_june'],
                                   skiprows = 1,
                                   )
-    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'april_pop': prison_pop_data.sum(0).loc['april_pop'], 'as_of_date': 'N/A'}
+    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'june_pop': prison_pop_data.sum(0).loc['june_pop'], 'as_of_date_june': 'N/A'}
     prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
     return prison_pop_data
 prison_pop_data = load_prison_pop_data()
@@ -23,18 +24,18 @@ def load_covid_prison_data():
     covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
                                     names = ['name', 'abbreviation', 'staff_tests', 'staff_tests_with_multiples', 'prisoner_tests',
                                              'prisoner_test_with_multiples', 'total_staff_cases', 'total_prisoner_cases', 'staff_recovered',
-                                             'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date', 'notes'],
+                                             'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date_june', 'notes'],
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths'],
                                     skiprows = 1, # Change according to date
                                     )
-    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['april_pop']
-    covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['april_pop']
+    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['june_pop']
+    covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['june_pop']
     covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
     nationwide_covid_prison_data = {'name': 'NATIONWIDE', 'total_prisoner_cases': covid_prison_data.sum(0).loc['total_prisoner_cases'],
                                     'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'],
                                     'Prison_CR': '', 'Prison_MR': '', 'Prison_CFR': ''}
-    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
-    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['april_pop']
+    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['june_pop']
+    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['june_pop']
     nationwide_covid_prison_data['Prison_CFR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / nationwide_covid_prison_data['total_prisoner_cases']
     covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
     return covid_prison_data
@@ -378,8 +379,8 @@ if st.checkbox('Show Data'):
     st.markdown('<h4>US State Prison Populations</h4>', unsafe_allow_html = True)
     st.write(prison_pop_data)
     st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
-    st.markdown('*april_pop:* "The total population of people held in the agency\'s prisons and secure facilities."')
-    st.markdown('*as_of_date:* "The date the data reflect. In some instances, an April figure was not available, and we used the most recent number the agency could provide."')
+    st.markdown('*june_pop:* "The total population of people held in the agency\'s prisons and secure facilities."')
+    st.markdown('*as_of_date_june:* "The date the data reflect."')
 
     st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
     covid_prison_data = covid_prison_data[['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'Prison_CR', 'Prison_MR', 'Prison_CFR']]
@@ -421,5 +422,5 @@ st.markdown('More on interpreting COVID-19 data: ["How to Understand COVID-19 Nu
 st.markdown('More on mass incarceration: ["Mass Incarceration"](https://www.aclu.org/issues/smart-justice/mass-incarceration).')
 st.markdown('More on COVID-19 in prisons, including its implications for minorities&#8212especially Black people, who face both higher incarceration rates and higher COVID-19 mortality rates compared to other racial groups&#8212as well as testing strategies and prison population changes: ["How U.S. Prisons Became Ground Zero for Covid-19"](https://www.politico.com/news/magazine/2020/06/25/criminal-justice-prison-conditions-coronavirus-in-prisons-338022).')
 st.markdown('For a more thorough investigation of the issues at hand, check out this article from The Marshall Project, the organization that compiles the prison data I used: ["A State-by-State Look at Coronavirus in Prisons"](https://www.themarshallproject.org/2020/05/01/a-state-by-state-look-at-coronavirus-in-prisons).')
-st.write('Grid map layout inspired by this data visualization project: ["States Are Reopening: See How Coronavirus Cases Rise or Fall"](https://projects.propublica.org/reopening-america/).') 
+st.write('Grid map layout inspired by this data visualization project: ["States Are Reopening: See How Coronavirus Cases Rise or Fall"](https://projects.propublica.org/reopening-america/).')
 st.markdown('View the source code for this project [here](https://github.com/fibanneacci/covid-prisons).')
