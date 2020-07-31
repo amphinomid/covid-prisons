@@ -8,8 +8,8 @@ PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COV
 @st.cache
 def load_prison_pop_data():
     prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
-                                  names = ['name', 'abbreviation', 'march_pop', 'as_of_date_march',
-                                           'april_pop', 'as_of_date_april', 'june_pop', 'as_of_date_june'],
+                                  names = ['name', 'abbreviation', 'march_pop', 'april_pop', 'june_pop',
+                                           'as_of_date_march', 'as_of_date_april', 'as_of_date_june'],
                                   usecols = ['name', 'june_pop', 'as_of_date_june'],
                                   skiprows = 1,
                                   )
