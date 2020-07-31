@@ -11,4 +11,4 @@ Prison COVID-19 data from The Marshall Project, a nonprofit investigative newsro
 
 COVID-19 data from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Check out their data repo [here](https://github.com/CSSEGISandData/COVID-19).
 
-This is my first-ever data project / web app, so I'm open to suggestions, discussion, and / or feedback!
+This is my first-ever data project, so I'm open to suggestions, discussion, and / or feedback!
