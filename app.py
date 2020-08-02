@@ -41,7 +41,7 @@ def load_covid_prison_data():
     return covid_prison_data
 covid_prison_data = load_covid_prison_data()
 
-COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-21-2020.csv') # Change according to date
+COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-28-2020.csv') # Change according to date
 @st.cache
 def load_covid_data():
     covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
