@@ -404,7 +404,7 @@ if st.checkbox('Show Data'):
     st.markdown('*State_CFR:* state case-fatality ratio; provided as "Mortality_Rate" by the dataset, except was per 100 confirmed cases ("Number recorded deaths * 100/ Number confirmed cases"); multipled by 1,000 to convert to number of recorded deaths per 100,000 confirmed cases.')
 
     st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
-    combined_data = combined_data[['name', 'Prison_CR', 'Prison_MR', 'Prison_CFR', 'State_CR', 'State_MR', 'State_CFR']]
+    combined_data = combined_data[['name', 'Prison_CR', 'State_CR', 'Prison_MR', 'State_MR', 'Prison_CFR', 'State_CFR']]
     st.write(combined_data)
 
 
