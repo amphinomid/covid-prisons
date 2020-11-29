@@ -25,7 +25,7 @@ def load_covid_prison_data():
                                     names = ['name', 'abbreviation', 'staff_tests', 'staff_tests_with_multiples', 'prisoner_tests',
                                              'prisoner_test_with_multiples', 'total_staff_cases', 'total_prisoner_cases', 'staff_recovered',
                                              'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date', 'notes'],
-                                    usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths'],
+                                    usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
                                     skiprows = 1, # Change according to date
                                     )
     covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['aug_pop']
@@ -40,8 +40,10 @@ def load_covid_prison_data():
     covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
     return covid_prison_data
 covid_prison_data = load_covid_prison_data()
+data_date = covid_prison_data.at[0, 'as_of_date']
+data_date = data_date.replace('/', '-')
 
-COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/11-17-2020.csv') # Change according to date
+COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/' + data_date + '.csv') # Change according to date
 @st.cache
 def load_covid_data():
     covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
