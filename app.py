@@ -12,7 +12,7 @@ def load_prison_pop_data():
                                   usecols = ['name', 'oct_pop', 'as_of_date_oct'],
                                   skiprows = 1,
                                   )
-    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'oct_pop': prison_pop_data.sum(0).loc['aug_pop'], 'as_of_date_oct': 'N/A'}
+    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'oct_pop': prison_pop_data.sum(0).loc['oct_pop'], 'as_of_date_oct': 'N/A'}
     prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
     return prison_pop_data
 prison_pop_data = load_prison_pop_data()
@@ -27,14 +27,14 @@ def load_covid_prison_data():
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
                                     skiprows = 1, # Change according to date
                                     )
-    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['aug_pop']
-    covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['aug_pop']
+    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['oct_pop']
+    covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['oct_pop']
     covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
     nationwide_covid_prison_data = {'name': 'NATIONWIDE', 'total_prisoner_cases': covid_prison_data.sum(0).loc['total_prisoner_cases'],
                                     'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'],
                                     'Prison_CR': '', 'Prison_MR': '', 'Prison_CFR': ''}
-    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['aug_pop']
-    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['aug_pop']
+    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['oct_pop']
+    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['oct_pop']
     nationwide_covid_prison_data['Prison_CFR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / nationwide_covid_prison_data['total_prisoner_cases']
     covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
     return covid_prison_data
