@@ -8,12 +8,11 @@ PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COV
 @st.cache
 def load_prison_pop_data():
     prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
-                                  names = ['name', 'abbreviation', 'march_pop', 'april_pop', 'june_pop', 'july_pop', 'aug_pop',
-                                           'as_of_date_march', 'as_of_date_april', 'as_of_date_june', 'as_of_date_july', 'as_of_date_aug'],
-                                  usecols = ['name', 'aug_pop', 'as_of_date_aug'],
+                                  names = ['name', 'abbreviation', 'march_pop', 'april_pop', 'june_pop', 'july_pop', 'aug_pop', 'sept_pop', 'oct_pop', 'as_of_date_march', 'as_of_date_april', 'as_of_date_june', 'as_of_date_july', 'as_of_date_aug', 'as_of_date_sept', 'as_of_date_oct'],
+                                  usecols = ['name', 'oct_pop', 'as_of_date_oct'],
                                   skiprows = 1,
                                   )
-    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'aug_pop': prison_pop_data.sum(0).loc['aug_pop'], 'as_of_date_aug': 'N/A'}
+    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'oct_pop': prison_pop_data.sum(0).loc['aug_pop'], 'as_of_date_oct': 'N/A'}
     prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
     return prison_pop_data
 prison_pop_data = load_prison_pop_data()
@@ -381,8 +380,8 @@ if st.checkbox('Show Data'):
     st.markdown('<h4>US State Prison Populations</h4>', unsafe_allow_html = True)
     st.write(prison_pop_data)
     st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
-    st.markdown('*aug_pop:* "The total population of people in prison in August."')
-    st.markdown('*as_of_date_aug:* "The date the count reflects."')
+    st.markdown('*oct_pop:* "The total population of people in prison in October."')
+    st.markdown('*as_of_date_oct:* "The date the count reflects."')
 
     st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
     covid_prison_data = covid_prison_data[['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'Prison_CR', 'Prison_MR', 'Prison_CFR']]
