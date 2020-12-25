@@ -3,7 +3,7 @@
 
 View the project [here](https://covid-prisons.herokuapp.com). Note: the Plotly charts are not responsive, so this works best on desktop.
 
-<img src="https://github.com/fibanneacci/covid-prisons/blob/master/Screen%20Shot%202020-07-26%20at%2012.27.31%20PM.png" width="900">
+<img src="https://github.com/fibanneacci/covid-prisons/blob/main/Screen%20Shot%202020-07-26%20at%2012.27.31%20PM.png" width="900">
 
 I wanted to make this data project to explore the impact of COVID-19 in prisons versus the overall population.
 
