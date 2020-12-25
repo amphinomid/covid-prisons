@@ -25,7 +25,7 @@ def load_covid_prison_data():
                                              'prisoner_test_with_multiples', 'total_staff_cases', 'total_prisoner_cases', 'staff_recovered',
                                              'prisoners_recovered', 'total_staff_deaths', 'total_prisoner_deaths', 'as_of_date', 'notes'],
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
-                                    skiprows = 1, # Change according to date
+                                    skiprows = 103, # Change according to date
                                     )
     covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['oct_pop']
     covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['oct_pop']
@@ -388,7 +388,7 @@ if st.checkbox('Show Data'):
     st.write(covid_prison_data)
     st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
     st.markdown('*total_prisoner_cases:* "The cumulative number of positive coronavirus cases among the incarcerated population."')
-    st.markdown('*total_prisoner_deaths:* "The number of deaths of prisoners to date."')
+    st.markdown('*total_prisoner_deaths:* "The number of deaths of incarcerated individuals to date."')
     st.markdown('*Prison_CR:* prison case rate; calculated as *total_prisoner_cases \* 100000 / population* (from prison population data).')
     st.markdown('*Prison_MR:* prison mortality rate; calculated as *total_prisoner_deaths \* 100000 / population* (from prison population data).')
     st.markdown('*Prison_CFR:* prison case-fatality ratio; calculated as *total_prisoner_deaths \* 100000 / total_prisoner_cases*.')
@@ -417,8 +417,7 @@ st.markdown('**Case-fatality ratio** estimates how deadly an illness is. A formu
 st.write('**Data doesn\'t always tell the whole story.** These data likely reflect underreporting (some COVID-19 cases and deaths are never ultimately confirmed) and data lag (it takes time for new case and death data to show up on official reports, and some currently-active cases may ultimately, unfortunately, result in death). Case rate, mortality rate, case-fatality ratio, and other metrics depend on both (a) an outbreak itself and (b) our response to it (for example, testing).')
 st.write('Also: federal prisons and D.C. were excluded from these analyses; the Marshall data did not include D.C. data, and placed federal prisons in a separate category (rather than grouping them with their state\'s data). Furthermore&#8212I\'m assuming due to some sizing or rendering error&#8212some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
 st.write('In addition, prison case and mortality rates were estimated using prison population figures retrieved as early as January 2020.')
-st.markdown('**The US has a mass incarceration problem.** According to the [American Civil Liberties Union (ACLU)](https://www.aclu.org/issues/smart-justice/mass-incarceration), "despite making up close to 5% of the global population, the U.S. has nearly 25% of the world\'s prison population". And over the course of the COVID-19 pandemic, many state and local governments have failed to take adequate measures to protect prisoners from the disease. Prisoners have continued to live in cramped, crowded, and often unsanitary facilities, and interact with staff who travel in-and-out of the surrounding community.')
-st.write('I wanted to make this data project to explore the impact of COVID-19 in prisons versus the overall population.')
+st.markdown('**The US has a mass incarceration problem.** According to the [American Civil Liberties Union (ACLU)](https://www.aclu.org/issues/smart-justice/mass-incarceration), "despite making up close to 5% of the global population, the U.S. has nearly 25% of the world\'s prison population". And over the course of the COVID-19 pandemic, many state and local governments have failed to take adequate measures to protect incarcerated individuals from the disease. Incarcerated individuals have continued to live in cramped, crowded, and often unsanitary facilities, and interact with staff who travel in-and-out of the surrounding community.')
 st.markdown('More on interpreting COVID-19 data: ["How to Understand COVID-19 Numbers"](https://www.propublica.org/article/how-to-understand-covid-19-numbers?utm_source=sailthru&utm_medium=email&utm_campaign=majorinvestigations&utm_content=feature).')
 st.markdown('More on mass incarceration: ["Mass Incarceration"](https://www.aclu.org/issues/smart-justice/mass-incarceration).')
 st.markdown('More on COVID-19 in prisons, including its implications for minorities&#8212especially Black people, who face both higher incarceration rates and higher COVID-19 mortality rates compared to other racial groups&#8212as well as testing strategies and prison population changes: ["How U.S. Prisons Became Ground Zero for Covid-19"](https://www.politico.com/news/magazine/2020/06/25/criminal-justice-prison-conditions-coronavirus-in-prisons-338022).')
