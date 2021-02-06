@@ -8,11 +8,12 @@ PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COV
 @st.cache
 def load_prison_pop_data():
     prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
-                                  names = ['name', 'abbreviation', 'march_pop', 'april_pop', 'june_pop', 'july_pop', 'aug_pop', 'sept_pop', 'oct_pop', 'as_of_date_march', 'as_of_date_april', 'as_of_date_june', 'as_of_date_july', 'as_of_date_aug', 'as_of_date_sept', 'as_of_date_oct'],
-                                  usecols = ['name', 'oct_pop', 'as_of_date_oct'],
+                                  names = ['name', 'abbreviation', 'march_pop', 'april_pop', 'june_pop', 'july_pop', 'aug_pop', 'sept_pop', 'oct_pop', 'nov_pop', 'as_of_date_march', 'as_of_date_april', 'as_of_date_june', 'as_of_date_july', 'as_of_date_aug', 'as_of_date_sept',
+                                      'as_of_date_oct', 'as_of_date_nov'],
+                                  usecols = ['name', 'nov_pop', 'as_of_date_nov'],
                                   skiprows = 1,
                                   )
-    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'oct_pop': prison_pop_data.sum(0).loc['oct_pop'], 'as_of_date_oct': 'N/A'}
+    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'nov_pop': prison_pop_data.sum(0).loc['nov_pop'], 'as_of_date_nov': 'N/A'}
     prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
     return prison_pop_data
 prison_pop_data = load_prison_pop_data()
@@ -27,14 +28,14 @@ def load_covid_prison_data():
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
                                     skiprows = 103, # Change according to date
                                     )
-    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['oct_pop']
-    covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['oct_pop']
+    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['nov_pop']
+    covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['nov_pop']
     covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
     nationwide_covid_prison_data = {'name': 'NATIONWIDE', 'total_prisoner_cases': covid_prison_data.sum(0).loc['total_prisoner_cases'],
                                     'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'],
                                     'Prison_CR': '', 'Prison_MR': '', 'Prison_CFR': ''}
-    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['oct_pop']
-    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['oct_pop']
+    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['nov_pop']
+    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['nov_pop']
     nationwide_covid_prison_data['Prison_CFR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / nationwide_covid_prison_data['total_prisoner_cases']
     covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
     return covid_prison_data
@@ -380,8 +381,8 @@ if st.checkbox('Show Data'):
     st.markdown('<h4>US State Prison Populations</h4>', unsafe_allow_html = True)
     st.write(prison_pop_data)
     st.markdown('[Data](https://github.com/themarshallproject/COVID_prison_data) from The Marshall Project, a nonprofit investigative newsroom dedicated to the U.S. criminal justice system.')
-    st.markdown('*oct_pop:* "The total population of people in prison in October."')
-    st.markdown('*as_of_date_oct:* "The date the count reflects."')
+    st.markdown('*nov_pop:* "The total population of people in prison in November."')
+    st.markdown('*as_of_date_nov:* "The date the count reflects."')
 
     st.markdown('<h4>COVID-19 in US State Prisons</h4>', unsafe_allow_html = True)
     covid_prison_data = covid_prison_data[['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'Prison_CR', 'Prison_MR', 'Prison_CFR']]
