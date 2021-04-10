@@ -25,7 +25,7 @@ def load_covid_prison_data():
                                     names = ['name', 'abbreviation', 'staff_tests', 'staff_tests_with_multiples', 'total_staff_cases',
                                              'staff_recovered', 'total_staff_deaths', 'staff_partial_dose', 'staff_full_dose',
                                              'prisoner_tests', 'prisoner_test_with_multiples', 'total_prisoner_cases', 'prisoners_recovered',
-                                             'total_prisoner_deaths', 'prisoners_partial_dose', 'prisoners_full_dose', as_of_date', 'notes'],
+                                             'total_prisoner_deaths', 'prisoners_partial_dose', 'prisoners_full_dose', 'as_of_date', 'notes'],
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
                                     skiprows = 103, # Change according to date
                                     )
