@@ -53,13 +53,6 @@ def load_covid_data():
                              usecols = ['Province_State', 'Confirmed', 'Deaths', 'Incident_Rate', 'Mortality_Rate'],
                              skiprows = [0, 3, 10, 11, 14, 15, 40, 45, 53],
                             )
-    '''covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
-                             names = ['Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_', 'Confirmed', 'Deaths', 'Recovered',
-                                      'Active', 'FIPS', 'Incident_Rate', 'People_Tested', 'People_Hospitalized', 'Mortality_Rate', 'UID',
-                                      'ISO3', 'Testing_Rate', 'Hospitalization_Rate'],
-                             usecols = ['Province_State', 'Confirmed', 'Deaths', 'Incident_Rate', 'Mortality_Rate'],
-                             skiprows = [0, 3, 10, 11, 14, 15, 40, 45, 53],
-                             )'''
     covid_data = covid_data.rename(columns = {'Incident_Rate': 'State_CR'})
     covid_data = covid_data.rename(columns = {'Mortality_Rate': 'State_CFR'})
     covid_data['State_CFR'] = covid_data['State_CFR'] * 1000
