@@ -268,7 +268,8 @@ def make_grid(metric, color):
             ),
         ),
         plot_bgcolor = '#ffffff',
-        font = dict(family = 'sans serif', size = 12, color = '#000000'),
+        #font = dict(family = 'sans serif', size = 12, color = '#000000'),
+        font = dict(size = 12, color = '#000000'),
     )
 
     grid.update_xaxes(showticklabels = False, linecolor = '#000000')
@@ -309,7 +310,8 @@ if display_data == 'Mortality Rate':
         barmode = 'group',
         bargap = 0.4,
         plot_bgcolor = '#ffffff',
-        font = dict(family = 'sans serif', size = 14, color = '#000000'),
+        #font = dict(family = 'sans serif', size = 14, color = '#000000'),
+        font = dict(size = 14, color = '#000000'),
         )
     mr_chart.update_yaxes(autorange = 'reversed')
     st.write(mr_chart)
@@ -338,7 +340,8 @@ elif display_data == 'Case-Fatality Ratio':
         barmode = 'group',
         bargap = 0.4,
         plot_bgcolor = '#ffffff',
-        font = dict(family = 'sans serif', size = 14, color = '#000000'),
+        #font = dict(family = 'sans serif', size = 14, color = '#000000'),
+        font = dict(size = 14, color = '#000000'),
         )
     cfr_chart.update_yaxes(autorange = 'reversed')
     st.write(cfr_chart)
@@ -367,7 +370,8 @@ else:
         barmode = 'group',
         bargap = 0.4,
         plot_bgcolor = '#ffffff',
-        font = dict(family = 'sans serif', size = 14, color = '#000000'),
+        #font = dict(family = 'sans serif', size = 14, color = '#000000'),
+        font = dict(size = 14, color = '#000000'),
         )
     cr_chart.update_yaxes(autorange = 'reversed')
     st.write(cr_chart)
