@@ -1,5 +1,5 @@
 # COVID-19 in Prisons, as Told by Data
-### Python web app, built with Plotly, Pandas, and Streamlit; hosted on Heroku
+### Python (Plotly, Pandas, Streamlit)
 
 View the project [here](https://covid-prisons.herokuapp.com). Note: the Plotly charts are not responsive, so this works best on desktop.
 
