@@ -1,6 +1,5 @@
 # COVID-19 in Prisons, as Told by Data
 ### Python (Plotly, Pandas, Streamlit)
-#### Currently works better on Chrome. Not sure if this is related to Streamlit or source code (ported over from Heroku after they removed their free plan), may look into this in the future.
 
 View the project [here](https://covid-prisons.herokuapp.com). Note: the Plotly charts are not responsive, so this works best on desktop.
 
