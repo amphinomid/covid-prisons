@@ -12,7 +12,7 @@ def load_prison_pop_data():
                                   usecols = ['name', 'pop', 'as_of_date'],
                                   skiprows = 1,
                                   )
-    prison_pop_data.drop_duplicates(subset = ['name'], keep = 'last')
+    prison_pop_data = prison_pop_data.drop_duplicates(subset = ['name'], keep = 'last')
     return prison_pop_data
 prison_pop_data = load_prison_pop_data()
 
