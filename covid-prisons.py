@@ -5,7 +5,6 @@ import pandas as pd
 from datetime import datetime
 
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
-@st.cache
 def load_prison_pop_data():
     prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL,
                                   names = ['name', 'abbreviation', 'month', 'as_of_date', 'pop'],
@@ -17,7 +16,6 @@ def load_prison_pop_data():
 prison_pop_data = load_prison_pop_data()
 
 COVID_PRISON_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/covid_prison_cases.csv')
-@st.cache
 def load_covid_prison_data():
     covid_prison_data = pd.read_csv(COVID_PRISON_DATA_URL, nrows = 50,
                                     names = ['name', 'abbreviation', 'staff_tests', 'staff_tests_with_multiples', 'total_staff_cases',
@@ -27,7 +25,7 @@ def load_covid_prison_data():
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
                                     skiprows = 154, # Relatively recent with relatively few non-reporters (Delaware for cases and Maine and Nevada for deaths)
                                     )
-    covid_prison_data['Prison_CR'] = prison_pop_data['pop']#covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['pop']
+    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['pop']
     covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['pop']
     covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
     return covid_prison_data
@@ -36,7 +34,6 @@ data_date = covid_prison_data.at[0, 'as_of_date']
 data_date = data_date.replace('/', '-')
 
 COVID_DATA_URL = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/' + data_date + '.csv') # Change according to date
-@st.cache
 def load_covid_data():
     covid_data = pd.read_csv(COVID_DATA_URL, nrows = 50,
                              names = ['Province_State','Country_Region','Last_Update','Lat','Long_','Confirmed','Deaths','Recovered',
