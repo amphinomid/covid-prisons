@@ -25,7 +25,7 @@ def load_covid_prison_data():
                                              'prisoner_tests', 'prisoner_test_with_multiples', 'total_prisoner_cases', 'prisoners_recovered',
                                              'total_prisoner_deaths', 'prisoners_partial_dose', 'prisoners_full_dose', 'as_of_date', 'notes'],
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
-                                    skiprows = 155, # Relatively recent with relatively few non-reporters (Delaware for cases and Maine and Nevada for deaths)
+                                    skiprows = 154, # Relatively recent with relatively few non-reporters (Delaware for cases and Maine and Nevada for deaths)
                                     )
     covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['pop']
     covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['pop']
@@ -256,7 +256,7 @@ def make_grid(metric, color):
     )
 
     grid.update_xaxes(showticklabels = False, linecolor = '#000000')
-    grid.update_yaxes(range = [0, max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max()) + 0.05 * max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max())], visible = False)
+    grid.update_yaxes(range = [0.1, max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max()) + 0.05 * max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max())], visible = False)
     
     return grid
 
