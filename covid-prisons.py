@@ -255,8 +255,8 @@ def make_grid(metric, color):
         font = dict(size = 12, color = '#000000'),
     )
 
-    grid.update_xaxes(showticklabels = False, linecolor = '#000000')
-    grid.update_yaxes(range = [0.05 * max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max()) + 0.05 * max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max()), max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max()) + 0.05 * max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max())], visible = False)
+    # grid.update_xaxes(showticklabels = False, linecolor = '#000000')
+    grid.update_yaxes(range = [0, max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max()) + 0.05 * max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max())], visible = False)
     
     return grid
 
