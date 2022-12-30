@@ -7,13 +7,12 @@ from datetime import datetime
 PRISON_POP_DATA_URL = ('https://raw.githubusercontent.com/themarshallproject/COVID_prison_data/master/data/prison_populations.csv')
 @st.cache
 def load_prison_pop_data():
-    prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL, nrows = 50,
+    prison_pop_data = pd.read_csv(PRISON_POP_DATA_URL,
                                   names = ['name', 'abbreviation', 'month', 'as_of_date', 'pop'],
                                   usecols = ['name', 'pop', 'as_of_date'],
                                   skiprows = 1,
                                   )
-    nationwide_prison_pop_data = {'name': 'NATIONWIDE', 'pop': prison_pop_data.sum(0).loc['pop'], 'as_of_date': 'N/A'}
-    prison_pop_data = prison_pop_data.append(nationwide_prison_pop_data, ignore_index = True)
+    prison_pop_data.drop_duplicates(subset = ['name'], keep = 'last')
     return prison_pop_data
 prison_pop_data = load_prison_pop_data()
 
@@ -26,18 +25,11 @@ def load_covid_prison_data():
                                              'prisoner_tests', 'prisoner_test_with_multiples', 'total_prisoner_cases', 'prisoners_recovered',
                                              'total_prisoner_deaths', 'prisoners_partial_dose', 'prisoners_full_dose', 'as_of_date', 'notes'],
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
-                                    skiprows = 103, # Change according to date
+                                    skiprows = 155, # Relatively recent with relatively few non-reporters (Delaware for cases and Maine and Nevada for deaths)
                                     )
     covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['pop']
     covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['pop']
     covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
-    nationwide_covid_prison_data = {'name': 'NATIONWIDE', 'total_prisoner_cases': covid_prison_data.sum(0).loc['total_prisoner_cases'],
-                                    'total_prisoner_deaths': covid_prison_data.sum(0).loc['total_prisoner_deaths'],
-                                    'Prison_CR': '', 'Prison_MR': '', 'Prison_CFR': ''}
-    nationwide_covid_prison_data['Prison_CR'] = nationwide_covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data.sum(0).loc['pop']
-    nationwide_covid_prison_data['Prison_MR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data.sum(0).loc['pop']
-    nationwide_covid_prison_data['Prison_CFR'] = nationwide_covid_prison_data['total_prisoner_deaths'] * 100000 / nationwide_covid_prison_data['total_prisoner_cases']
-    covid_prison_data = covid_prison_data.append(nationwide_covid_prison_data, ignore_index = True)
     return covid_prison_data
 covid_prison_data = load_covid_prison_data()
 data_date = covid_prison_data.at[0, 'as_of_date']
@@ -50,20 +42,14 @@ def load_covid_data():
                              names = ['Province_State','Country_Region','Last_Update','Lat','Long_','Confirmed','Deaths','Recovered',
                                       'Active','FIPS','Incident_Rate','Total_Test_Results','People_Hospitalized','Case_Fatality_Ratio',
                                       'UID','ISO3','Testing_Rate','Hospitalization_Rate','Date','People_Tested','Mortality_Rate'],
-                             usecols = ['Province_State', 'Confirmed', 'Deaths', 'Incident_Rate', 'Mortality_Rate'],
+                             usecols = ['Province_State', 'Confirmed', 'Deaths', 'Incident_Rate', 'Case_Fatality_Ratio'],
                              skiprows = [0, 3, 10, 11, 14, 15, 40, 45, 53],
                             )
     covid_data = covid_data.rename(columns = {'Incident_Rate': 'State_CR'})
-    covid_data = covid_data.rename(columns = {'Mortality_Rate': 'State_CFR'})
+    covid_data = covid_data.rename(columns = {'Case_Fatality_Ratio': 'State_CFR'})
     covid_data['State_CFR'] = covid_data['State_CFR'] * 1000
     covid_data['population'] = (covid_data['Confirmed'] * 100000 / covid_data['State_CR']).astype(int)
     covid_data['State_MR'] = covid_data['Deaths'] * 100000 / covid_data['population']
-    nationwide_covid_data = {'Province_State': 'NATIONWIDE', 'Confirmed': covid_data.sum(0).loc['Confirmed'], 'Deaths': covid_data.sum(0).loc['Deaths'],
-                             'State_CR': '', 'State_CFR': '', 'population': covid_data.sum(0).loc['population'], 'State_MR': ''}
-    nationwide_covid_data['State_CR'] = nationwide_covid_data['Confirmed'] * 100000 / nationwide_covid_data['population']
-    nationwide_covid_data['State_CFR'] = nationwide_covid_data['Deaths'] * 100000 / nationwide_covid_data['Confirmed']
-    nationwide_covid_data['State_MR'] = nationwide_covid_data['Deaths'] * 100000 / nationwide_covid_data['population']
-    covid_data = covid_data.append(nationwide_covid_data, ignore_index = True)
     return covid_data
 covid_data = load_covid_data()
 
@@ -87,7 +73,7 @@ def make_grid(metric, color):
                           ''  , 'CA', 'AZ', 'NM', 'OK', 'AR', 'MS', 'AL', 'GA', 'SC', 'NC', ''  ,
                           ''  , ''  , ''  , ''  , 'TX', 'LA', ''  , ''  , 'FL', ''  , ''  , ''  ,
                           ''  , ''  , ''  , ''  , ''  , ''  , ''  , ''  , ''  , ''  , ''  , ''  ,
-                          ''  , 'AK', ''  , 'HI', ''  , ''  , ''  , ''  , ''  , ''  , 'NAT', '' ,),
+                          ''  , 'AK', ''  , 'HI', ''  , ''  , ''  , ''  , ''  , ''  , '', '' ,),
         specs = [
             [ {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'} ],
             [ {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'}, {'type': 'bar'} ],
@@ -251,9 +237,6 @@ def make_grid(metric, color):
     grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'Hawaii']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 8, col = 4)
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Hawaii']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 4)
     
-    grid.add_trace(go.Bar(x = ['In prisons'], y = combined_data.loc[combined_data['name'] == 'NATIONWIDE']['Prison_' + metric], width = 0.3, marker_color = color, legendgroup = '1', showlegend = False), row = 8, col = 11)
-    grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'NATIONWIDE']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 11)
-
     grid.update_layout(
         #width = 1100,
         #height = 1038,
@@ -407,7 +390,7 @@ if st.checkbox('Show Data'):
     st.markdown('*population:* calculated using State_CR, provided as "Incident_Rate" by the dataset; *Confirmed \* 100000 / Incident_Rate*.')
     st.markdown('*State_CR:* state case rate; provided as "Incident_Rate" by the dataset; "confirmed cases per 100,000 persons."')
     st.markdown('*State_MR:* state mortality rate; calculated as *Deaths \* 100000 / population*.')
-    st.markdown('*State_CFR:* state case-fatality ratio; provided as "Mortality_Rate" by the dataset, except was per 100 confirmed cases ("Number recorded deaths * 100/ Number confirmed cases"); multipled by 1,000 to convert to number of recorded deaths per 100,000 confirmed cases.')
+    st.markdown('*State_CFR:* state case-fatality ratio; provided as "Case_Fatality_Ratio" by the dataset, except was per 100 confirmed cases ("Number recorded deaths * 100/ Number confirmed cases"); multipled by 1,000 to convert to number of recorded deaths per 100,000 confirmed cases.')
 
     st.markdown('<h4>Side-by-Side Comparison</h4>', unsafe_allow_html = True)
     combined_data = combined_data[['name', 'Prison_CR', 'State_CR', 'Prison_MR', 'State_MR', 'Prison_CFR', 'State_CFR']]
@@ -419,13 +402,12 @@ st.markdown('<h3>Explanation of terms, caveats, discussion</h3>', unsafe_allow_h
 st.markdown('**Case rate** estimates how widespread an illness is. A formula for case rate is as follows: *number of confirmed cases \* 100000 / population*.')
 st.markdown('**Mortality rate** estimates how widespread death caused by an illness is. A formula for mortality rate is as follows: *number of recorded deaths \* 100000 / population*.')
 st.markdown('**Case-fatality ratio** estimates how deadly an illness is. A formula for case-fatality ratio is as follows: *number of recorded deaths \* 100000 / number of confirmed cases*.')
-st.write('**Data doesn\'t always tell the whole story.** These data likely reflect underreporting (some COVID-19 cases and deaths are never ultimately confirmed) and data lag (it takes time for new case and death data to show up on official reports, and some currently-active cases may ultimately, unfortunately, result in death). Case rate, mortality rate, case-fatality ratio, and other metrics depend on both (a) an outbreak itself and (b) our response to it (for example, testing). **Important note: an empty spot on the bar graph does *not* mean a 0% rate! Several states do not always report in a timely manner, leaving gaps in the data; check the data tables to be sure (\'NaN\' signifies a gap).**')
-st.write('Also: federal prisons and D.C. were excluded from these analyses; the Marshall data did not include D.C. data, and placed federal prisons in a separate category (rather than grouping them with their state\'s data). Furthermore—I\'m assuming due to some sizing or rendering error—some bars of the bar charts inside the map floated just above their zerolines; to fix this, I offset the y-ranges by a tiny amount. The map is only intended to show relative heights, and the scale of each bar chart is small enough that the offset doesn\'t make a discernable difference, but nonetheless, I\'m not sure if this is bad practice? (Feel free to roast me if it is.)')
-st.write('In addition, prison case and mortality rates were estimated using prison population figures retrieved as early as January 2020.')
-st.markdown('**The US has a mass incarceration problem.** According to the [American Civil Liberties Union (ACLU)](https://www.aclu.org/issues/smart-justice/mass-incarceration), "despite making up close to 5% of the global population, the U.S. has nearly 25% of the world\'s prison population". And over the course of the COVID-19 pandemic, many state and local governments have failed to take adequate measures to protect incarcerated individuals from the disease. Incarcerated individuals have continued to live in cramped, crowded, and often unsanitary facilities, and interact with staff who travel in-and-out of the surrounding community.')
+st.write('**Data doesn\'t always tell the whole story.** These data likely reflect underreporting (some COVID-19 cases and deaths are never ultimately confirmed). Case rate, mortality rate, case-fatality ratio, and other metrics depend on both (a) an outbreak itself and (b) our response to it (for example, testing). Also, this project is a snapshot of the situation in around June 2021 (for the prison COVID-19 data); The Marshall Project\'s [data](https://github.com/themarshallproject/COVID_prison_data), which this project relies on, is no longer being updated. I chose a relatively recent report with relatively few data gaps: the non-reporting states are Delaware for prison COVID-19 cases and Maine and Nevada for prison COVID-19 deaths. Therefore, **an empty spot on the bar graph is *not* a 0! Check the data tables to be sure (\'NaN\' signifies a gap).** Finally, dates don\'t always align due to the various reporting dates of the different sources of data required for this analysis.')
+st.write('Federal prisons and D.C. were excluded from this analysis; the Marshall data did not include D.C. data, and placed federal prisons in a separate category (rather than grouping them with their state\'s data).')
+st.markdown('**The US has a mass incarceration problem.** According to the [American Civil Liberties Union (ACLU)](https://www.aclu.org/issues/smart-justice/mass-incarceration), "despite making up close to 5% of the global population, the U.S. has nearly 25% of the world\'s prison population". And over the course of the COVID-19 pandemic, many state and local governments have failed to take adequate measures to protect incarcerated individuals from the disease. Incarcerated individuals have continued to live in cramped, crowded and often unsanitary facilities, and interact with staff who travel in-and-out of the surrounding community.')
 st.markdown('More on interpreting COVID-19 data: ["How to Understand COVID-19 Numbers"](https://www.propublica.org/article/how-to-understand-covid-19-numbers?utm_source=sailthru&utm_medium=email&utm_campaign=majorinvestigations&utm_content=feature).')
 st.markdown('More on mass incarceration: ["Mass Incarceration"](https://www.aclu.org/issues/smart-justice/mass-incarceration).')
-st.markdown('More on COVID-19 in prisons, including its implications for minorities—especially Black people, who face both higher incarceration rates and higher COVID-19 mortality rates compared to other racial groups—as well as testing strategies and prison population changes: ["How U.S. Prisons Became Ground Zero for Covid-19"](https://www.politico.com/news/magazine/2020/06/25/criminal-justice-prison-conditions-coronavirus-in-prisons-338022).')
+st.markdown('More on COVID-19 in prisons, including its implications for people of color—especially Black people, who face both higher incarceration rates and higher COVID-19 mortality rates compared to other racial groups—as well as testing strategies and prison population changes: ["How U.S. Prisons Became Ground Zero for Covid-19"](https://www.politico.com/news/magazine/2020/06/25/criminal-justice-prison-conditions-coronavirus-in-prisons-338022).')
 st.markdown('For a more thorough investigation of the issues at hand, check out this article from The Marshall Project, the organization that compiles the prison data I used: ["A State-by-State Look at Coronavirus in Prisons"](https://www.themarshallproject.org/2020/05/01/a-state-by-state-look-at-coronavirus-in-prisons).')
 st.write('Grid map layout inspired by this data visualization project: ["States Are Reopening: See How Coronavirus Cases Rise or Fall"](https://projects.propublica.org/reopening-america/).')
 st.markdown('View the source code for this project [here](https://github.com/amphinomid/covid-prisons).')
