@@ -11,7 +11,7 @@ def load_prison_pop_data():
                                   usecols = ['name', 'as_of_date', 'pop'],
                                   skiprows = 1,
                                   )
-    prison_pop_data = prison_pop_data.drop_duplicates(subset = ['name'], keep = 'last')
+    prison_pop_data = prison_pop_data.drop_duplicates(subset = ['name'], keep = 'last').reset_index()
     return prison_pop_data
 prison_pop_data = load_prison_pop_data()
 
@@ -25,7 +25,7 @@ def load_covid_prison_data():
                                     usecols = ['name', 'total_prisoner_cases', 'total_prisoner_deaths', 'as_of_date'],
                                     skiprows = 154, # Relatively recent with relatively few non-reporters (Delaware for cases and Maine and Nevada for deaths)
                                     )
-    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases']# * 100000 / prison_pop_data['pop']
+    covid_prison_data['Prison_CR'] = covid_prison_data['total_prisoner_cases'] * 100000 / prison_pop_data['pop']
     covid_prison_data['Prison_MR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / prison_pop_data['pop']
     covid_prison_data['Prison_CFR'] = covid_prison_data['total_prisoner_deaths'] * 100000 / covid_prison_data['total_prisoner_cases']
     return covid_prison_data
