@@ -238,10 +238,10 @@ def make_grid(metric, color):
     grid.add_trace(go.Bar(x = ['Statewide'], y = combined_data.loc[combined_data['name'] == 'Hawaii']['State_' + metric], width = 0.3, marker_color = '#000000', legendgroup = '2', showlegend = False), row = 8, col = 4)
     
     grid.update_layout(
-        #width = 1100,
-        #height = 1038,
-        width = 1000,
-        height = 944,
+        width = 1100,
+        height = 1038,
+        #width = 1000,
+        #height = 944,
         #showlegend = False,
         #legend_itemclick = False,
         #legend_itemdoubleclick = False,
@@ -255,7 +255,7 @@ def make_grid(metric, color):
         font = dict(size = 12, color = '#000000'),
     )
 
-    # grid.update_xaxes(showticklabels = False, linecolor = '#000000')
+    grid.update_xaxes(showticklabels = False)#, linecolor = '#000000')
     grid.update_yaxes(range = [0, max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max()) + 0.05 * max(combined_data['Prison_' + metric].max(), combined_data['State_' + metric].max())], visible = False)
     
     return grid
