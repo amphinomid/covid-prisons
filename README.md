@@ -1,7 +1,7 @@
 # COVID-19 in Prisons, as Told by Data
 ### Python (Plotly, Pandas, Streamlit)
 
-View the project [here](https://covid-prisons.herokuapp.com). Note: the Plotly charts are not responsive, so this works best on desktop.
+View the project [here]([https://covid-prisons.herokuapp.com](https://amphinomid-covid-prisons-covid-prisons-qeu7xm.streamlit.app)). Note: the Plotly charts are not responsive, so this works best on desktop.
 
 <img src="https://github.com/fibanneacci/covid-prisons/blob/main/Screen%20Shot%202020-07-26%20at%2012.27.31%20PM.png" width="900">
 
